@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125992909403",
+    "project_id": "codesgram-31642",
+    "storage_bucket": "codesgram-31642.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125992909403:android:4267f118df67a5e47fdd7e",
+        "android_client_info": {
+          "package_name": "com.example.codesgram"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJTDqYSBVbEcrab7ZiL8r1qltbw9iAnOA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
