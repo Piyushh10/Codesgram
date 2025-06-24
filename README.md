@@ -1,8 +1,5 @@
 # Codesgram
 
-<<<<<<< HEAD
-Codesgram is an Android application designed to enhance your coding and problem-solving experience. It integrates features such as chat, user profiles, and LeetCode statistics, making it a one-stop solution for coding enthusiasts.
-=======
 Codesgram is a modern Android app that brings together coding enthusiasts to chat, collaborate, and track their LeetCode progress—all in one place. With real-time chat, user profiles, and deep LeetCode integration, Codesgram is perfect for students, interview preppers, and anyone passionate about coding.
 
 ---
@@ -17,21 +14,17 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
 - [Tech Stack](#tech-stack)
 - [Setup & Installation](#setup--installation)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
 - [Contact](#contact)
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
 
----
 
 ## Features
-<<<<<<< HEAD
+
 - User authentication and profiles
 - Group and personal chat functionality
 - LeetCode statistics and progress tracking
 - Beautiful, modern UI
 - More features coming soon!
-=======
+
 
 ### 🔒 Authentication & Onboarding
 - Google Sign-In with Firebase Authentication
@@ -55,31 +48,22 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
 ### 🖥️ Modern UI
 - Built with Jetpack Compose for a smooth, responsive experience
 - Dark mode and visually appealing layouts
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
 
 ---
 
 ## Screenshots
-<<<<<<< HEAD
-=======
 
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
 <!-- Add screenshots of your app here -->
 <p align="center">
-  <img src="assets/screens/home_screen.png" alt="Home Screen" width="250"/>
-  <img src="assets/screens/login_screen.png" alt="Login Screen" width="250"/>
-<<<<<<< HEAD
-=======
-  <img src="assets/screens/user_stats_screen.png" alt="User Stats Screen" width="250"/>
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
+  <img src="assets/screens/1.jpg" alt="Home Screen" width="250"/>
+  <img src="assets/screens/4.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/2.jpg" alt="Login Screen" width="250"/>
+   <img src="assets/screens/3.jpg" alt="Login Screen" width="250"/>
   <!-- Add more screenshots as needed -->
 </p>
 
 ---
 
-<<<<<<< HEAD
-## Installation & Setup
-=======
 ## Architecture
 
 Codesgram uses a robust, scalable architecture:
@@ -90,20 +74,6 @@ Codesgram uses a robust, scalable architecture:
 - **Retrofit:** For RESTful API calls to LeetCode endpoints
 - **Repository Pattern:** Abstracts data sources (network, database)
 - **ViewModels:** Manage UI-related data and handle business logic
-
-<details>
-<summary>Architecture Diagram (textual)</summary>
-
-```
-[UI (Jetpack Compose)]
-      |
-[ViewModel (LeetCodeStatsViewModel, UserProfileViewModel)]
-      |
-[Repository (LeetCodeRepository)]
-      |
-[Remote API (LeetCodeApiService)]   [Firebase (Auth, Realtime DB)]
-```
-</details>
 
 ---
 
@@ -140,7 +110,6 @@ Codesgram uses a robust, scalable architecture:
 
 ## Setup & Installation
 
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/yourusername/Codesgram.git
@@ -148,24 +117,20 @@ Codesgram uses a robust, scalable architecture:
 2. **Open in Android Studio:**
    - Open Android Studio
    - Select `Open an existing project` and choose the cloned folder
-<<<<<<< HEAD
 3. **Build the project:**
    - Let Gradle sync and build the project
 4. **Run the app:**
-=======
 3. **Configure Firebase:**
    - Add your `google-services.json` to `app/`
    - Set up Firebase Auth and Realtime Database in the Firebase console
 4. **Build the project:**
    - Let Gradle sync and build the project
 5. **Run the app:**
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
    - Connect your Android device or use an emulator
    - Click the Run button
 
 ---
 
-<<<<<<< HEAD
 ## Usage
 - Sign up or log in with your credentials
 - Join group chats or start personal conversations
@@ -180,7 +145,7 @@ Codesgram uses a robust, scalable architecture:
 - Retrofit
 - MVVM Architecture
 - LeetCode API integration
-=======
+
 ## Roadmap
 
 - [ ] Add push notifications for new messages
@@ -188,36 +153,7 @@ Codesgram uses a robust, scalable architecture:
 - [ ] More detailed LeetCode analytics
 - [ ] In-app friend requests and group management
 - [ ] UI/UX enhancements
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
-
----
-
-## Contributing
-<<<<<<< HEAD
-=======
-
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
-
----
-
-## License
-<<<<<<< HEAD
-=======
-
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
 
 ## Contact
-<<<<<<< HEAD
-For questions or feedback, please contact [your-email@example.com]. 
-=======
+For questions or feedback, please contact [shivnanip815@gmail.com].
 
-For questions or feedback, please contact [your-email@example.com].
-
----
-
-Would you like me to save this as your new README? If you want to add or change anything, let me know!
->>>>>>> c65a015ed9650a7f4bd0f29aa42ba4b42b68194a
