@@ -125,7 +125,7 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper) {
             }
         }
 
-        // Messages list with LazyColumn
+        // Messages list with LazyColumgit n
         LazyColumn(
             state = listState,
             modifier = Modifier.weight(1f)
