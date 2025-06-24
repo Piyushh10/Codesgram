@@ -1,5 +1,7 @@
 # Codesgram
 
+[![Android](https://img.shields.io/badge/platform-Android-green?logo=android)](https://developer.android.com/) [![Kotlin](https://img.shields.io/badge/language-Kotlin-blueviolet?logo=kotlin)](https://kotlinlang.org/) [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-ff69b4?logo=jetpack-compose)](https://developer.android.com/jetpack/compose)
+
 Codesgram is a modern Android app that brings together coding enthusiasts to chat, collaborate, and track their LeetCode progress—all in one place. With real-time chat, user profiles, and deep LeetCode integration, Codesgram is perfect for students, interview preppers, and anyone passionate about coding.
 
 ---
