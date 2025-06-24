@@ -93,7 +93,7 @@ fun LoginScreen(navController: NavController) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1976D2), Color(0xFF63A4FF)),
+                    colors = listOf(Color.White, Color.Black),
                     startY = 0f,
                     endY = Float.POSITIVE_INFINITY
                 )

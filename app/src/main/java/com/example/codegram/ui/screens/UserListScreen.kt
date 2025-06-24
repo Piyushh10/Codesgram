@@ -98,40 +98,85 @@ fun UserListScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+                .padding(bottom = 20.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
-            IconButton(onClick = {
-                null
-            }) {
-                Icon(Icons.Default.ChatBubble, contentDescription = "Chat", Modifier.size(60.dp), tint = Color.White)
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            IconButton(onClick = {
-                val selectedGroup = groups.firstOrNull()
-                selectedGroup?.let {
-                    navController.navigate(Screen.GroupChat.createRoute(it.name))
+            // Modern Chat Button
+            androidx.compose.material3.Surface(
+                shape = CircleShape,
+                shadowElevation = 8.dp,
+                color = Color.White,
+                tonalElevation = 4.dp,
+                modifier = Modifier.size(64.dp)
+            ) {
+                IconButton(
+                    onClick = { null },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                ) {
+                    Icon(
+                        Icons.Default.ChatBubble,
+                        contentDescription = "Chat",
+                        modifier = Modifier.size(32.dp),
+                        tint = Color.Black
+                    )
                 }
-            }) {
-                Icon(Icons.Default.Group, contentDescription = "Group", modifier = Modifier.size(60.dp), tint = Color.White)
             }
 
-            Spacer(modifier = Modifier.width(16.dp))
-            // Show the current user's avatar
-            AsyncImage(
-                model = currentUserAvatar, // Pass the current user's avatar
-                contentDescription = "Current User Avatar",
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .border(2.dp, Color.Gray, CircleShape)
-                    .clickable {
-                        navController.navigate(Screen.LeetCodeStats.createRoute(username))
-                    }
-            )
+            Spacer(modifier = Modifier.width(24.dp))
+
+            // Modern Group Button
+            androidx.compose.material3.Surface(
+                shape = CircleShape,
+                shadowElevation = 8.dp,
+                color = Color.White,
+                tonalElevation = 4.dp,
+                modifier = Modifier.size(64.dp)
+            ) {
+                IconButton(
+                    onClick = {
+                        val selectedGroup = groups.firstOrNull()
+                        selectedGroup?.let {
+                            navController.navigate(Screen.GroupChat.createRoute(it.name))
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                ) {
+                    Icon(
+                        Icons.Default.Group,
+                        contentDescription = "Group",
+                        modifier = Modifier.size(32.dp),
+                        tint = Color.Black
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(24.dp))
+
+            // Modern Avatar with border and shadow
+            androidx.compose.material3.Surface(
+                shape = CircleShape,
+                shadowElevation = 8.dp,
+                color = Color.White,
+                tonalElevation = 4.dp,
+                modifier = Modifier.size(56.dp)
+            ) {
+                AsyncImage(
+                    model = currentUserAvatar,
+                    contentDescription = "Current User Avatar",
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .border(3.dp, Color.Black, CircleShape)
+                        .clickable {
+                            navController.navigate(Screen.LeetCodeStats.createRoute(username))
+                        }
+                )
+            }
         }
     }
 }

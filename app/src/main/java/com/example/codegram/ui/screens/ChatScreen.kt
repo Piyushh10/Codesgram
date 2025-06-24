@@ -159,7 +159,10 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interviews/blind-75-leetcode-problems-detailed-video-solutions"))
                                 context.startActivity(intent)
                             }
-                            "Rate us" -> { /* Handle Rating */ }
+                            "Interview Experiences" -> {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interview"))
+                                context.startActivity(intent)
+                            }
                             "SignOut" -> {
                                 FirebaseAuth.getInstance().signOut()
                                 navController.navigate(Screen.Login.route)
@@ -395,7 +398,7 @@ fun DrawerContent(onItemClicked: (String) -> Unit) {
             "A2Z Sheet",
             "Neetcode 150",
             "Blind 75",
-            "Rate us",
+            "Interview Experiences",
             "SignOut"
         )
         items.forEach { item ->
