@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.codesgram"
+    namespace = "com.example.codegram"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.codesgram"
+        applicationId = "com.example.codegram"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
