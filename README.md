@@ -60,7 +60,6 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
   <img src="assets/screens/1.jpg" alt="Home Screen" width="250"/>
   <img src="assets/screens/4.jpg" alt="Login Screen" width="250"/>
   <img src="assets/screens/2.jpg" alt="Login Screen" width="250"/>
-   <img src="assets/screens/3.jpg" alt="Login Screen" width="250"/>
   <!-- Add more screenshots as needed -->
 </p>
 
