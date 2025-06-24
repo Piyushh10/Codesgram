@@ -107,12 +107,6 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // App Logo/Icon
-            Image(
-                painter = painterResource(R.drawable.logo),
-                contentDescription = "App Logo",
-                modifier = Modifier.size(80.dp)
-            )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = "Welcome Back!",
