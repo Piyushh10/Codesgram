@@ -59,8 +59,14 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
 <!-- Add screenshots of your app here -->
 <p align="center">
   <img src="assets/screens/1.jpg" alt="Home Screen" width="250"/>
-  <img src="assets/screens/4.jpg" alt="Login Screen" width="250"/>
-  <img src="assets/screens/2.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg1.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg2.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg3.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg4.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg5.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg6.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg7.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cg8.jpg" alt="Login Screen" width="250"/>
   <!-- Add more screenshots as needed -->
 </p>
 
