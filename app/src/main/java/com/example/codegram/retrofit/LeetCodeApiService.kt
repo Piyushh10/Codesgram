@@ -99,7 +99,7 @@ interface LeetCodeApi {
 }
 
 object ApiService{
-    private const val BASE_URL = "https://code-rooms-ayf3o60qv-parmesh-girdonias-projects.vercel.app/"
+    private const val BASE_URL = "https://codesgram-piyushshivnani-backend.vercel.app/"
     private const val TOKEN = "Njk0jzEtudaAiIcZZxgr7uC7"
 
     private val authInterceptor = Interceptor{chain ->
