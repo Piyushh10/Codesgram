@@ -2,12 +2,14 @@ package com.example.codegram.model.leetcode
 
 data class Group(
     val name: String,
-    val minRating:Double,
-    val maxRating: Double,
+    val minRating: Int,
+    val maxRating: Int,
+    val minSolved: Int,
+    val maxSolved: Int
 )
 
 val groups = listOf(
-    Group("Beginner", 0.0, 1000.0,),
-    Group("Intermediate", 1001.0, 2000.0),
-    Group("Advanced", 2001.0, 3000.0)
+    Group("Beginner", 0, 1400, 0, 200),
+    Group("Intermediate", 1401, 1700, 201, 400),
+    Group("Advanced", 1701, Int.MAX_VALUE, 401, Int.MAX_VALUE)
 )

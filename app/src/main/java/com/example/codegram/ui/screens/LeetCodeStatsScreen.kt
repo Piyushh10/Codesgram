@@ -48,7 +48,6 @@ fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String, vie
     val userProfileStats by viewmodel.userProfile.observeAsState()
     val contestRating by viewModel.contestRating.observeAsState()
     val recentSubmission by viewModel.recentSubmissions.observeAsState(emptyList())
-    var avatar by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(username) {
         Log.d("LeetCodeStatsScreen", "Username: $username")
@@ -57,14 +56,23 @@ fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String, vie
         viewmodel.fetchUserProfile(username)
         viewModel.fetchRecentSubmissions(username)
 
-        val currentUser = FirebaseAuth.getInstance().currentUser?.uid
-        val db = FirebaseDatabase.getInstance().getReference("users")
-        currentUser?.let {
-            val avatarRef = db.child(it).child("avatar")
-            avatarRef.get().addOnSuccessListener {
-                avatar = it.getValue(String::class.java)
-            }.addOnFailureListener {
-                Log.e("LeetCodeStatsScreen", "Failed to fetch avatar: ${it.message}")
+        // Update group in Firebase
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            try {
+                val leetCodeStats = com.example.codegram.retrofit.ApiService.leetCodeApi.getProfile(username)
+                val userProfile = com.example.codegram.retrofit.ApiService.leetCodeApi.userProfile(username)
+                val rating = userProfile.ranking
+                val totalSolved = leetCodeStats.totalSolved
+                val group = when {
+                    (rating in 0..1400) || (totalSolved in 0..200) -> "Beginner"
+                    (rating in 1401..1700) || (totalSolved in 201..400) -> "Intermediate"
+                    else -> "Advanced"
+                }
+                val dbGrp = FirebaseDatabase.getInstance().getReference("groups").child(userId).child("groupName")
+                dbGrp.setValue(group)
+            } catch (e: Exception) {
+                Log.e("LeetCodeStatsScreen", "Failed to update group in Firebase", e)
             }
         }
     }
@@ -99,7 +107,7 @@ fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String, vie
                                     horizontalArrangement = Arrangement.Start,
                                 ) {
                                     AsyncImage(
-                                        model = avatar,
+                                        model = userProfileStats?.avatar,
                                         contentDescription = "",
                                         modifier = Modifier
                                             .size(64.dp)
@@ -146,11 +154,16 @@ fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String, vie
                                 // Recent Submissions Section
                                 SectionTitle("Recent Submissions")
                                 Spacer(modifier = Modifier.height(8.dp))
+                                Divider(color = Color.White, thickness = 1.dp)
+                                Spacer(modifier = Modifier.height(8.dp))
                                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                                     item {
                                         if (recentSubmission.isNotEmpty()) {
-                                            recentSubmission.forEach { submission ->
+                                            recentSubmission.forEachIndexed { index, submission ->
                                                 SubmissionCard(submission)
+                                                if (index != recentSubmission.lastIndex) {
+                                                    Divider(color = Color.DarkGray, thickness = 1.dp, modifier = Modifier.padding(vertical = 4.dp))
+                                                }
                                                 Spacer(Modifier.padding(bottom = 10.dp))
                                             }
                                         } else {
@@ -184,6 +197,11 @@ fun SectionTitle(text: String) {
 
 @Composable
 fun SubmissionCard(submission: Submission) {
+    fun formatTimestamp(timestamp: Long): String {
+        val sdf = java.text.SimpleDateFormat("dd-MM-yyyy HH:mm", java.util.Locale.getDefault())
+        sdf.timeZone = java.util.TimeZone.getDefault()
+        return sdf.format(java.util.Date(timestamp * 1000))
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -194,6 +212,7 @@ fun SubmissionCard(submission: Submission) {
         Spacer(modifier = Modifier.height(4.dp))
         Text("Status: ${submission.statusDisplay}", fontSize = 14.sp, color = Color.White)
         Text("Language: ${submission.lang}", fontSize = 14.sp, color = Color.White)
+        Text("Submitted: ${formatTimestamp(submission.timestamp)}", fontSize = 14.sp, color = Color.White)
     }
 }
 

@@ -117,7 +117,7 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper) {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = group.name,
+                    text = if (groupName.isBlank() || groupName == "null" || groupName == "Unknown") "Loading..." else groupName,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 22.sp

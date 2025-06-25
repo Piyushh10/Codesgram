@@ -79,12 +79,22 @@ fun LeetCodeUsernameInputScreen(navController: NavController) {
                     CoroutineScope(Dispatchers.IO).launch {
                         val userProfile = leetCodeRepository.fetchUserProfile(username)
                         val avatar = userProfile?.avatar ?: googleAvatar
+                        val rating = userProfile?.ranking ?: 0
+                        val leetCodeStats = ApiService.leetCodeApi.getProfile(username)
+                        val totalSolved = leetCodeStats.totalSolved
+                        val group = when {
+                            (rating in 0..1400) || (totalSolved in 0..200) -> "Beginner"
+                            (rating in 1401..1700) || (totalSolved in 201..400) -> "Intermediate"
+                            else -> "Advanced"
+                        }
                         val userMap = mapOf(
                             "userId" to userId,
                             "username" to username,
                             "email" to email,
                             "avatar" to avatar,
-                            "rating" to (userProfile?.ranking ?: 0)
+                            "rating" to rating,
+                            "totalSolved" to totalSolved,
+                            "group" to group
                         )
                         dbRef.setValue(userMap).addOnSuccessListener {
                             navController.navigate("chat") {
