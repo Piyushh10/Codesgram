@@ -1,6 +1,7 @@
 package com.example.codegram.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -64,6 +66,8 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalTextStyle
 import androidx.navigation.NavController
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -77,11 +81,18 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
     var groupName by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     val db = FirebaseDatabase.getInstance().getReference("groupMessages").child(groupName).child("senderId")
+    var showMembersDialog by remember { mutableStateOf(false) }
+    var groupMembers by remember { mutableStateOf<List<Pair<String, String?>>>(emptyList()) } // Pair<username, avatarUrl>
 
     // Fetch messages for this group and scroll to the latest message when messages change
     LaunchedEffect(senderId) {
         dbGrp.get().addOnSuccessListener { snapshot->
             groupName = snapshot.getValue(String::class.java).toString()?: "Unknown"
+            // Add user to group members node if not already present
+            if (groupName.isNotBlank() && groupName != "null" && groupName != "Unknown") {
+                val membersRef = FirebaseDatabase.getInstance().getReference("groups").child(groupName).child("members").child(senderId)
+                membersRef.setValue(true)
+            }
         }
         db.get().addOnSuccessListener { snapshot->
             username = snapshot.getValue(String::class.java).toString()
@@ -176,7 +187,122 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
                         fontSize = 12.sp
                     )
                 }
+
+                // Group members icon button
+                IconButton(
+                    onClick = {
+                        // Fetch group members from Firebase
+                        val groupRef = FirebaseDatabase.getInstance().getReference("groups").child(groupName).child("members")
+                        groupRef.get().addOnSuccessListener { snapshot ->
+                            val memberIds = snapshot.children.mapNotNull { it.key }
+                            val usersRef = FirebaseDatabase.getInstance().getReference("users")
+                            val membersList = mutableListOf<Pair<String, String?>>()
+                            var loaded = 0
+                            if (memberIds.isEmpty()) {
+                                groupMembers = emptyList()
+                                showMembersDialog = true
+                            }
+                            memberIds.forEach { userId ->
+                                usersRef.child(userId).get().addOnSuccessListener { userSnap ->
+                                    val username = userSnap.child("username").getValue(String::class.java) ?: "Unknown"
+                                    val avatar = userSnap.child("avatar").getValue(String::class.java)
+                                    membersList.add(username to avatar)
+                                    loaded++
+                                    if (loaded == memberIds.size) {
+                                        groupMembers = membersList
+                                        showMembersDialog = true
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            Color.White.copy(alpha = 0.1f),
+                            CircleShape
+                        )
+                ) {
+                    Icon(
+                        Icons.Default.Group,
+                        contentDescription = "Group Members",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
+        }
+
+        // Show group members dialog
+        if (showMembersDialog) {
+            AlertDialog(
+                onDismissRequest = { showMembersDialog = false },
+                title = { Text("Group Members", color = Color.White) },
+                text = {
+                    Column(
+                        modifier = Modifier.background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
+                            )
+                        )
+                    ) {
+                        if (groupMembers.isEmpty()) {
+                            Text("No members found.", color = Color.White.copy(alpha = 0.7f))
+                        } else {
+                            groupMembers.forEach { (username, avatar) ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
+                                    ),
+                                    shape = RoundedCornerShape(12.dp),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        if (avatar != null) {
+                                            AsyncImage(
+                                                model = avatar,
+                                                contentDescription = "Avatar",
+                                                modifier = Modifier
+                                                    .size(56.dp)
+                                                    .clip(CircleShape)
+                                                    .border(2.dp, Color(0xFF7AB2D3), CircleShape)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.width(16.dp))
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = username,
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp
+                                            )
+                                            Text(
+                                                text = "Group member",
+                                                color = Color.White.copy(alpha = 0.6f),
+                                                fontSize = 12.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                confirmButton = {
+                    Button(onClick = { showMembersDialog = false }) {
+                        Text("Close")
+                    }
+                },
+                containerColor = Color(0xFF23274D)
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
