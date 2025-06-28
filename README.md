@@ -60,16 +60,21 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
 <p align="center">
   <img src="assets/screens/cgm11.jpg" alt="Home Screen" width="250"/>
   <img src="assets/screens/cgm1.jpg" alt="Home Screen" width="250"/>
-  <img src="assets/screens/cgm14.jpg" alt="Home Screen" width="250"/>
-  <img src="assets/screens/cgm13.jpg" alt="Home Screen" width="250"/>
-  <img src="assets/screens/cgm12.jpg" alt="Home Screen" width="250"/>
-  <img src="assets/screens/cgm10.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cgm16.jpg" alt="Home Screen" width="250"/>
+  <img src="assets/screens/cgm23.jpg" alt="Login Screen" width="250"/>
   <img src="assets/screens/cgm2.jpg" alt="Login Screen" width="250"/>
-  <img src="assets/screens/cgm9.jpg" alt="Login Screen" width="250"/>
-  <img src="assets/screens/cgm3.jpg" alt="Login Screen" width="250"/>
-  <img src="assets/screens/cgm4.jpg" alt="Login Screen" width="250"/>
-  <img src="assets/screens/cgm5.jpg" alt="Login Screen" width="250"/>
   <img src="assets/screens/cgm6.jpg" alt="Login Screen" width="250"/>
+
+  <img src="assets/screens/cgm15.jpg" alt="Home Screen" width="250"/>
+  <img src="assets/screens/cgm17.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cgm18.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cgm19.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cgm20.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cgm21.jpg" alt="Login Screen" width="250"/>
+  <img src="assets/screens/cgm22.jpg" alt="Login Screen" width="250"/>
+  
+  <img src="assets/screens/cgm24.jpg" alt="Login Screen" width="250"/>
+  
   <!-- Add more screenshots as needed -->
 </p>
 
