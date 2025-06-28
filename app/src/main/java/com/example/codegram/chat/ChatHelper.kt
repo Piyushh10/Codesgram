@@ -117,6 +117,30 @@ class ChatHelper(private val db: FirebaseDatabase, val context: Context) {
                 }
         }
     }
+
+    fun fetchUsersPaginated(
+        pageSize: Int = 20,
+        lastUserId: String? = null,
+        onUsersFetched: (users: List<User>, lastKey: String?) -> Unit
+    ) {
+        val usersRef = databaseReference.child("users").orderByKey().limitToFirst(pageSize + 1)
+        val query = if (lastUserId != null) {
+            usersRef.startAfter(lastUserId)
+        } else {
+            usersRef
+        }
+        query.get()
+            .addOnSuccessListener { snapshot ->
+                val users = snapshot.children.mapNotNull { it.getValue(User::class.java) }
+                val result = if (users.size > pageSize) users.dropLast(1) else users
+                val newLastKey = if (users.size > pageSize) snapshot.children.last().key else null
+                onUsersFetched(result, newLastKey)
+            }
+            .addOnFailureListener {
+                Log.e("ChatHelper", "Error Fetching Users Paginated", it)
+                onUsersFetched(emptyList(), null)
+            }
+    }
 }
 
 

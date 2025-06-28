@@ -77,6 +77,9 @@ fun UserListScreen(
     var isSearchVisible by remember { mutableStateOf(false) }
     val db = FirebaseDatabase.getInstance().getReference("users").child(currentUserId).child("username")
     var username by remember { mutableStateOf("") }
+    var lastUserId by remember { mutableStateOf<String?>(null) }
+    var hasMore by remember { mutableStateOf(true) }
+    val pageSize = 20
 
     // Filter users based on search query
     val filteredUsers = if (searchQuery.isBlank()) {
@@ -93,6 +96,28 @@ fun UserListScreen(
         }
     }
 
+    // Pagination: Load first page on launch
+    LaunchedEffect(Unit) {
+        users = emptyList()
+        lastUserId = null
+        hasMore = true
+        chatHelper.fetchUsersPaginated(pageSize, null) { fetchedUsers, newLastKey ->
+            users = fetchedUsers.filter { it.userId != currentUserId }
+            lastUserId = newLastKey
+            hasMore = newLastKey != null
+        }
+    }
+
+    fun loadMoreUsers() {
+        if (!hasMore) return
+        chatHelper.fetchUsersPaginated(pageSize, lastUserId) { fetchedUsers, newLastKey ->
+            val newUsers = fetchedUsers.filter { it.userId != currentUserId }
+            users = users + newUsers
+            lastUserId = newLastKey
+            hasMore = newLastKey != null
+        }
+    }
+
     Column(
         modifier = Modifier
             .background(
@@ -103,13 +128,6 @@ fun UserListScreen(
             .fillMaxSize()
             .systemBarsPadding()
     ) {
-        LaunchedEffect(Unit) {
-            chatHelper.fetchUser { fetchedUsers ->
-                val filteredUsers = fetchedUsers.filter { it.userId != currentUserId }
-                users = filteredUsers
-            }
-        }
-
         LazyColumn {
             if (filteredUsers.isEmpty() && searchQuery.isNotBlank()) {
                 item {
@@ -138,7 +156,32 @@ fun UserListScreen(
                 }
             } else {
                 items(filteredUsers) { user ->
-                UserItem(user = user, onClick = { onUserClick(user) })
+                    UserItem(user = user, onClick = { onUserClick(user) })
+                }
+                // Pagination: Load More button
+                if (hasMore && searchQuery.isBlank()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Card(
+                                onClick = { loadMoreUsers() },
+                                colors = CardDefaults.cardColors(containerColor = Color(0xFF7AB2D3)),
+                                shape = RoundedCornerShape(12.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                            ) {
+                                Text(
+                                    text = "Load More",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
