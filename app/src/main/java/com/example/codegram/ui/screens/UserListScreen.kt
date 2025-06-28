@@ -138,7 +138,7 @@ fun UserListScreen(
                 }
             } else {
                 items(filteredUsers) { user ->
-                    UserItem(user = user, onClick = { onUserClick(user) })
+                UserItem(user = user, onClick = { onUserClick(user) })
                 }
             }
         }
@@ -290,7 +290,7 @@ fun UserListScreen(
 fun UserItem(user: User, onClick: () -> Unit) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
+        .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
@@ -321,8 +321,8 @@ fun UserItem(user: User, onClick: () -> Unit) {
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-                Text(
-                    text = user.username,
+            Text(
+                text = user.username,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -340,7 +340,7 @@ fun UserItem(user: User, onClick: () -> Unit) {
                 contentDescription = "Chat",
                 tint = Color(0xFF7AB2D3),
                 modifier = Modifier.size(20.dp)
-            )
+        )
         }
     }
 }
