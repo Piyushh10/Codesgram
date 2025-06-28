@@ -33,12 +33,25 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.example.codegram.R
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Chat
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.codegram.ui.screens.LeaderboardScreen
 
 @Composable
 fun SplashScreen() {
@@ -71,30 +84,25 @@ fun AccountNavigation() {
     val leetcodeViewModel = LeetCodeStatsViewModel()
     val firebaseAuth = FirebaseAuth.getInstance()
     var startDestination by remember { mutableStateOf<String?>(null) }
+    var leetCodeUsername by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         val user = firebaseAuth.currentUser
         if (user == null) {
             startDestination = Screen.Login.route
         } else {
-            // Try to get the username from Firebase
             val userId = user.uid
             val dbRef = db.getReference("users").child(userId)
-            
-            // Check both 'username' and 'leetCodeUsername' fields
             dbRef.get().addOnSuccessListener { snapshot ->
                 val username = snapshot.child("leetCodeUsername").getValue(String::class.java)
                     ?: snapshot.child("username").getValue(String::class.java)
-                
-                Log.d("AccountNavigation", "Username found: $username")
-                
+                leetCodeUsername = username
                 startDestination = if (!username.isNullOrBlank()) {
                     Screen.Chat.route
                 } else {
                     "LeetCodeUsernameInputScreen"
                 }
             }.addOnFailureListener {
-                Log.e("AccountNavigation", "Failed to get user data", it)
                 startDestination = "LeetCodeUsernameInputScreen"
             }
         }
@@ -103,35 +111,213 @@ fun AccountNavigation() {
     if (startDestination == null) {
         SplashScreen()
     } else {
-        NavHost(navController = navController, startDestination = startDestination!!) {
-            composable(Screen.Login.route) { LoginScreen(navController) }
-            composable("LeetCodeUsernameInputScreen") { LeetCodeUsernameInputScreen(navController) }
-            composable(
-                route = Screen.LeetCodeStats.route,
-                arguments = listOf(navArgument("username") { type = NavType.StringType })
-            ) { navBackStackEntry ->
-                val username = navBackStackEntry.arguments?.getString("username")
-                if (username != null) {
-                    LeetCodeStatsScreen(viewModel = leetcodeViewModel, username = username)
+        val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+        val currentRoute = currentBackStackEntry?.destination?.route
+        val showBottomBar = currentRoute == Screen.Chat.route ||
+            (currentRoute?.startsWith("LeetCodeStatsScreen") == true) ||
+            (currentRoute == Screen.Leaderboard.route)
+        if (currentRoute?.startsWith("PersonalChatScreen") == true) {
+            Scaffold(
+                bottomBar = {},
+            ) { innerPadding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = startDestination!!,
+                    modifier = Modifier.padding(innerPadding)
+                ) {
+                    composable(Screen.Login.route) { LoginScreen(navController) }
+                    composable("LeetCodeUsernameInputScreen") { LeetCodeUsernameInputScreen(navController) }
+                    composable(
+                        route = Screen.LeetCodeStats.route,
+                        arguments = listOf(navArgument("username") { type = NavType.StringType })
+                    ) { navBackStackEntry ->
+                        val username = navBackStackEntry.arguments?.getString("username")
+                        if (username != null) {
+                            LeetCodeStatsScreen(viewModel = leetcodeViewModel, username = username)
+                        }
+                    }
+                    composable(Screen.Chat.route) {
+                        ChatScreen(
+                            chatHelper = ChatHelper(db, LocalContext.current),
+                            navController = navController
+                        )
+                    }
+                    composable(
+                        route = Screen.PersonalChat.route,
+                        arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                    ) { navBackStackEntry ->
+                        val userId = navBackStackEntry.arguments?.getString("userId")
+                        if (userId != null) {
+                            ChatScreen(
+                                chatHelper = ChatHelper(db, LocalContext.current),
+                                navController = navController,
+                                personalChatUserId = userId
+                            )
+                        }
+                    }
+                    composable(
+                        route = Screen.GroupChat.route,
+                        arguments = listOf(navArgument("groupName") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val groupName = backStackEntry.arguments?.getString("groupName")
+                        groupName?.let {
+                            val chatHelper = ChatHelper(db, LocalContext.current)
+                            val selectedGroup = com.example.codegram.model.leetcode.groups.find { it.name == groupName }
+                            if (selectedGroup != null) {
+                                GroupChatScreen(group = selectedGroup, chatHelper = chatHelper, navController = navController)
+                            }
+                        }
+                    }
+                    composable(Screen.Leaderboard.route) {
+                        LeaderboardScreen()
+                    }
                 }
             }
-            composable(Screen.Chat.route) {
-                ChatScreen(
-                    chatHelper = ChatHelper(db, LocalContext.current),
-                    navController = navController
-                )
-            }
-            composable(
-                route = Screen.GroupChat.route,
-                arguments = listOf(navArgument("groupName") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val groupName = backStackEntry.arguments?.getString("groupName")
-                groupName?.let {
-                    val chatHelper = ChatHelper(db, LocalContext.current)
-                    val selectedGroup = groups.find { it.name == groupName }
-                    if (selectedGroup != null) {
-                        GroupChatScreen(group = selectedGroup, chatHelper = chatHelper, navController = navController)
+            return
+        }
+        Scaffold(
+            bottomBar = {
+                if (showBottomBar) {
+                    NavigationBar(
+                        containerColor = Color(0xFF1B1F3A)
+                    ) {
+                        // Leaderboard first
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.Star, contentDescription = "Leaderboard") },
+                            label = { Text("Leetboard") },
+                            selected = currentRoute == Screen.Leaderboard.route,
+                            onClick = {
+                                navController.navigate(Screen.Leaderboard.route) {
+                                    popUpTo(Screen.Chat.route)
+                                    launchSingleTop = true
+                                }
+                            },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFF7AB2D3),
+                                unselectedIconColor = Color(0xFFB0B3C7),
+                                selectedTextColor = Color(0xFF7AB2D3),
+                                unselectedTextColor = Color(0xFFB0B3C7),
+                                indicatorColor = Color.Transparent
+                            )
+                        )
+                        // Group second
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.Group, contentDescription = "Group") },
+                            label = { Text("Group") },
+                            selected = currentRoute?.startsWith("GroupChatScreen") == true,
+                            onClick = {
+                                val group = com.example.codegram.model.leetcode.groups.firstOrNull()
+                                group?.let {
+                                    navController.navigate(Screen.GroupChat.createRoute(it.name)) {
+                                        popUpTo(Screen.Chat.route)
+                                        launchSingleTop = true
+                                    }
+                                }
+                            },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFF7AB2D3),
+                                unselectedIconColor = Color(0xFFB0B3C7),
+                                selectedTextColor = Color(0xFF7AB2D3),
+                                unselectedTextColor = Color(0xFFB0B3C7),
+                                indicatorColor = Color.Transparent
+                            )
+                        )
+                        // Chat third
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.Chat, contentDescription = "Chat") },
+                            label = { Text("Chat") },
+                            selected = currentRoute?.startsWith(Screen.Chat.route) == true,
+                            onClick = {
+                                navController.navigate(Screen.Chat.route) {
+                                    popUpTo(Screen.Chat.route) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFF7AB2D3),
+                                unselectedIconColor = Color(0xFFB0B3C7),
+                                selectedTextColor = Color(0xFF7AB2D3),
+                                unselectedTextColor = Color(0xFFB0B3C7),
+                                indicatorColor = Color.Transparent
+                            )
+                        )
+                        // Profile fourth
+                        NavigationBarItem(
+                            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                            label = { Text("Profile") },
+                            selected = currentRoute?.startsWith("LeetCodeStatsScreen") == true,
+                            onClick = {
+                                leetCodeUsername?.let { username ->
+                                    if (username.isNotBlank()) {
+                                        navController.navigate(Screen.LeetCodeStats.createRoute(username)) {
+                                            popUpTo(Screen.Chat.route)
+                                            launchSingleTop = true
+                                        }
+                                    }
+                                }
+                            },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFF7AB2D3),
+                                unselectedIconColor = Color(0xFFB0B3C7),
+                                selectedTextColor = Color(0xFF7AB2D3),
+                                unselectedTextColor = Color(0xFFB0B3C7),
+                                indicatorColor = Color.Transparent
+                            )
+                        )
                     }
+                }
+            }
+        ) { innerPadding ->
+            NavHost(
+                navController = navController,
+                startDestination = startDestination!!,
+                modifier = Modifier.padding(innerPadding)
+            ) {
+                composable(Screen.Login.route) { LoginScreen(navController) }
+                composable("LeetCodeUsernameInputScreen") { LeetCodeUsernameInputScreen(navController) }
+                composable(
+                    route = Screen.LeetCodeStats.route,
+                    arguments = listOf(navArgument("username") { type = NavType.StringType })
+                ) { navBackStackEntry ->
+                    val username = navBackStackEntry.arguments?.getString("username")
+                    if (username != null) {
+                        LeetCodeStatsScreen(viewModel = leetcodeViewModel, username = username)
+                    }
+                }
+                composable(Screen.Chat.route) {
+                    ChatScreen(
+                        chatHelper = ChatHelper(db, LocalContext.current),
+                        navController = navController
+                    )
+                }
+                composable(
+                    route = Screen.PersonalChat.route,
+                    arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                ) { navBackStackEntry ->
+                    val userId = navBackStackEntry.arguments?.getString("userId")
+                    if (userId != null) {
+                        ChatScreen(
+                            chatHelper = ChatHelper(db, LocalContext.current),
+                            navController = navController,
+                            personalChatUserId = userId
+                        )
+                    }
+                }
+                composable(
+                    route = Screen.GroupChat.route,
+                    arguments = listOf(navArgument("groupName") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val groupName = backStackEntry.arguments?.getString("groupName")
+                    groupName?.let {
+                        val chatHelper = ChatHelper(db, LocalContext.current)
+                        val selectedGroup = com.example.codegram.model.leetcode.groups.find { it.name == groupName }
+                        if (selectedGroup != null) {
+                            GroupChatScreen(group = selectedGroup, chatHelper = chatHelper, navController = navController)
+                        }
+                    }
+                }
+                composable(Screen.Leaderboard.route) {
+                    LeaderboardScreen()
                 }
             }
         }

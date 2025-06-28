@@ -112,7 +112,6 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .background(
                 Brush.verticalGradient(
                     colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))

@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -82,7 +81,6 @@ fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String) {
                     colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
                 )
             )
-            .systemBarsPadding()
     ) {
         if (leetCodeStats == null || contestRating == null || userProfile == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

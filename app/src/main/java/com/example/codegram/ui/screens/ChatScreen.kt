@@ -89,7 +89,11 @@ import androidx.activity.compose.BackHandler
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
+fun ChatScreen(
+    chatHelper: ChatHelper,
+    navController: NavController,
+    personalChatUserId: String? = null
+) {
     val context = LocalContext.current
     val db = FirebaseDatabase.getInstance()
     val focusManager = LocalFocusManager.current
@@ -113,6 +117,18 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                 currentUserAvatar = it.getValue(String::class.java)
             }.addOnFailureListener {
                 currentUserAvatar = "https://assets.leetcode.com/users/default_avatar.jpg"
+            }
+        }
+    }
+
+    // If personalChatUserId is provided, fetch that user as receiver
+    LaunchedEffect(personalChatUserId) {
+        if (personalChatUserId != null) {
+            db.getReference("users").child(personalChatUserId).get().addOnSuccessListener { snapshot ->
+                val user = snapshot.getValue(User::class.java)
+                if (user != null) {
+                    receiver = user
+                }
             }
         }
     }
@@ -145,15 +161,18 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
         }
     }
 
-    // Handle system back button: if in chat, go back to user list
-    BackHandler(enabled = receiver != null) {
-        receiver = null
+    // Handle system back button: if in chat, go back to user list or popBackStack if in personalChatUserId mode
+    BackHandler(enabled = receiver != null || personalChatUserId != null) {
+        if (personalChatUserId != null) {
+            navController.popBackStack()
+        } else {
+            receiver = null
+        }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
             .background(
                 Brush.verticalGradient(
                     colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
@@ -166,7 +185,7 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                 focusManager.clearFocus()
             }
     ) {
-        if (receiver == null) {
+        if (receiver == null && personalChatUserId == null) {
             // User list screen: wrap in ModalNavigationDrawer
             ModalNavigationDrawer(
                 drawerContent = {
@@ -289,8 +308,8 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                             chatHelper = chatHelper,
                             currentUserId = it,
                             currentUserAvatar = currentUserAvatar,
-                            onUserClick = { selectedUser -> receiver = selectedUser },
-                            navController
+                            onUserClick = { selectedUser -> navController.navigate(com.example.codegram.ui.navigation.Screen.PersonalChat.createRoute(selectedUser.userId)) },
+                            navController = navController
                         )
                     }
                 }
@@ -323,7 +342,13 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                 ) {
                     // Back button
                     IconButton(
-                        onClick = { receiver = null },
+                        onClick = {
+                            if (personalChatUserId != null) {
+                                navController.popBackStack()
+                            } else {
+                                receiver = null
+                            }
+                        },
                         modifier = Modifier
                             .size(40.dp)
                             .background(

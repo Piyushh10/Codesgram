@@ -50,7 +50,6 @@ fun LeetCodeUsernameInputScreen(navController: NavController) {
                     colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
                 )
             )
-            .systemBarsPadding()
     ) {
         Column(
             modifier = Modifier
