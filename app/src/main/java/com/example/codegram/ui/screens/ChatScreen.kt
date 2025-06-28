@@ -182,7 +182,10 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                             }
                             "SignOut" -> {
                                 FirebaseAuth.getInstance().signOut()
-                                navController.navigate(Screen.Login.route)
+                                navController.navigate(Screen.Login.route) {
+                                    popUpTo(0) { inclusive = true }
+                                    launchSingleTop = true
+                                }
                             }
                         }
                     },

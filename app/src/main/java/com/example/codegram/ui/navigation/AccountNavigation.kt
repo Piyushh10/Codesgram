@@ -79,15 +79,22 @@ fun AccountNavigation() {
         } else {
             // Try to get the username from Firebase
             val userId = user.uid
-            val dbRef = db.getReference("users").child(userId).child("leetCodeUsername")
+            val dbRef = db.getReference("users").child(userId)
+            
+            // Check both 'username' and 'leetCodeUsername' fields
             dbRef.get().addOnSuccessListener { snapshot ->
-                val username = snapshot.getValue(String::class.java)
+                val username = snapshot.child("leetCodeUsername").getValue(String::class.java)
+                    ?: snapshot.child("username").getValue(String::class.java)
+                
+                Log.d("AccountNavigation", "Username found: $username")
+                
                 startDestination = if (!username.isNullOrBlank()) {
-                    Screen.LeetCodeStats.createRoute(username)
+                    Screen.Chat.route
                 } else {
                     "LeetCodeUsernameInputScreen"
                 }
             }.addOnFailureListener {
+                Log.e("AccountNavigation", "Failed to get user data", it)
                 startDestination = "LeetCodeUsernameInputScreen"
             }
         }
