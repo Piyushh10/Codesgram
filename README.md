@@ -2,7 +2,7 @@
 
 [![Android](https://img.shields.io/badge/platform-Android-green?logo=android)](https://developer.android.com/) [![Kotlin](https://img.shields.io/badge/language-Kotlin-blueviolet?logo=kotlin)](https://kotlinlang.org/) [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-ff69b4?logo=jetpack-compose)](https://developer.android.com/jetpack/compose)
 
-Codesgram is a modern Android app that brings together coding enthusiasts to chat, collaborate, and track their LeetCode progress—all in one place. With real-time chat, user profiles, and deep LeetCode integration powered by a custom backend, Codesgram is perfect for students, interview preppers, and anyone passionate about coding.
+Codesgram is a modern Android app that brings together coding enthusiasts to chat, collaborate, compete with peers, and track their LeetCode progress—all in one place. With real-time chat, user profiles, leaderboard and deep LeetCode integration powered by a custom backend, Codesgram is perfect for students, interview preppers, and anyone passionate about coding.
 
 ---
 
@@ -28,6 +28,9 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
 - LeetCode statistics and progress tracking (via custom backend)
 - Beautiful, modern UI
 - More features coming soon!
+- Leaderboard
+- Exclusive code sharing on chat with different UI and copy functionality
+- profile includes links of socials
 
 ### 🔒 Authentication & Onboarding
 - Google Sign-In with Firebase Authentication
@@ -40,7 +43,7 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
 - Toast notifications for message status
 
 ### 👤 User Profiles
-- Each user has a profile with avatar, email, and LeetCode stats
+- Each user has a profile with avatar, email, and LeetCode stats, social links, location information
 - Profiles are stored in Firebase and updated on sign-in
 
 ### 📊 LeetCode Stats & Progress
