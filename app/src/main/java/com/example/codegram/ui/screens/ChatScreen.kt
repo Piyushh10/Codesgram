@@ -245,23 +245,13 @@ fun ChatScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(
-                                Brush.linearGradient(
-                                    colors = listOf(
-                                        Color(0xFF1B1F3A),
-                                        Color(0xFF2A2F4C),
-                                        Color(0xFF3A3F5C)
-                                    ),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(1000f, 0f)
-                                )
+                            .background(Color(0xFF23274D))
+                            .border(
+                                width = 0.5.dp,
+                                color = Color(0xFF7AB2D3),
+                                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                             )
                             .padding(horizontal = 16.dp, vertical = 12.dp)
-                            .shadow(
-                                elevation = 8.dp,
-                                shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
-                                spotColor = Color.Black.copy(alpha = 0.3f)
-                            )
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -276,16 +266,16 @@ fun ChatScreen(
                                     painter = painterResource(R.drawable.launcher),
                                     contentDescription = "App Logo",
                                     modifier = Modifier
-                                        .size(40.dp)
+                                        .size(36.dp)
                                         .clip(CircleShape)
                                 )
-                                Spacer(modifier = Modifier.width(12.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
                                 Column {
                                     Text(
                                         text = "Codesgram",
-                                        color = Color.White,
+                                        color = Color(0xFF7AB2D3),
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 18.sp,
+                                        fontSize = 20.sp,
                                         fontFamily = FontFamily(Font(R.font.comforta_bold))
                                     )
                                     Text(
@@ -300,17 +290,17 @@ fun ChatScreen(
                             IconButton(
                                 onClick = { scope.launch { drawerState.open() } },
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(40.dp)
                                     .background(
-                                        Color.White.copy(alpha = 0.1f),
+                                        Color.White.copy(alpha = 0.08f),
                                         CircleShape
                                     )
                             ) {
                                 Icon(
                                     Icons.Default.Menu,
                                     contentDescription = "Menu",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(24.dp)
+                                    tint = Color(0xFF7AB2D3),
+                                    modifier = Modifier.size(22.dp)
                                 )
                             }
                         }
@@ -342,7 +332,7 @@ fun ChatScreen(
                             end = Offset(1000f, 0f)
                         )
                     )
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
                     .shadow(
                         elevation = 8.dp,
                         shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),

@@ -74,21 +74,11 @@ fun UserListScreen(
     var users by remember { mutableStateOf<List<User>>(emptyList()) }
     var isRefreshing by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var isSearchVisible by remember { mutableStateOf(false) }
     val db = FirebaseDatabase.getInstance().getReference("users").child(currentUserId).child("username")
     var username by remember { mutableStateOf("") }
     var lastUserId by remember { mutableStateOf<String?>(null) }
     var hasMore by remember { mutableStateOf(true) }
     val pageSize = 20
-
-    // Filter users based on search query
-    val filteredUsers = if (searchQuery.isBlank()) {
-        users
-    } else {
-        users.filter { user ->
-            user.username.contains(searchQuery, ignoreCase = true)
-        }
-    }
 
     LaunchedEffect(currentUserId) {
         db.get().addOnSuccessListener { snapshot->
@@ -128,8 +118,64 @@ fun UserListScreen(
             .fillMaxSize()
             .systemBarsPadding()
     ) {
+        // Always-visible Search Bar
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 0.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF2A2F4C).copy(alpha = 0.9f)
+            ),
+            shape = RoundedCornerShape(12.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "Search",
+                    tint = Color(0xFF7AB2D3),
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                TextField(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    label = { Text("Search users...", color = Color.White.copy(alpha = 0.6f)) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(40.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    ),
+                    textStyle = LocalTextStyle.current.copy(color = Color.White, fontSize = 15.sp),
+                    singleLine = true
+                )
+                if (searchQuery.isNotBlank()) {
+                    IconButton(onClick = { searchQuery = "" }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Clear Search",
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
         LazyColumn {
-            if (filteredUsers.isEmpty() && searchQuery.isNotBlank()) {
+            if (users.isEmpty() && searchQuery.isNotBlank()) {
                 item {
                     Card(
                         modifier = Modifier
@@ -155,7 +201,7 @@ fun UserListScreen(
                     }
                 }
             } else {
-                items(filteredUsers) { user ->
+                items(users) { user ->
                     UserItem(user = user, onClick = { onUserClick(user) })
                 }
                 // Pagination: Load More button
@@ -185,59 +231,6 @@ fun UserListScreen(
                 }
             }
         }
-
-        // Search Bar (appears when search is active)
-        if (isSearchVisible) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF2A2F4C).copy(alpha = 0.9f)
-                ),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextField(
-                        value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        label = { Text("Search users...", color = Color.White.copy(alpha = 0.6f)) },
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White
-                        ),
-                        textStyle = LocalTextStyle.current.copy(color = Color.White)
-                    )
-                    IconButton(
-                        onClick = { 
-                            searchQuery = ""
-                            isSearchVisible = false 
-                        }
-                    ) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = "Close Search",
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-        }
-
-        Spacer(Modifier.weight(1f))
     }
 }
 
