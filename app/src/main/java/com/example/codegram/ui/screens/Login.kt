@@ -114,61 +114,48 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(30.dp))
             LottieDemo()
             Text(
                 text = "Codesgram",
-                fontSize = 28.sp,
+                fontSize = 32.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
+
             Text(
                 text = "Connect with coders, compete, and grow together!",
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = Color.White.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 6.dp)
             )
             Spacer(modifier = Modifier.weight(1f))
-            Surface(
-                shape = RoundedCornerShape(24.dp),
-                tonalElevation = 8.dp,
-                shadowElevation = 12.dp,
-                color = Color.White.copy(alpha = 0.95f),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(
-                    modifier = Modifier.padding(28.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Google Sign-In Button
-                    Button(
-                        onClick = {
-                            googleSignInClient.signOut().addOnCompleteListener {
-                                launcher.launch(googleSignInClient.signInIntent)
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(54.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_google),
-                            contentDescription = "Google Logo",
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = "Sign in with Google",
-                            color = Color.Black,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 18.sp
-                        )
+            Button(
+                onClick = {
+                    googleSignInClient.signOut().addOnCompleteListener {
+                        launcher.launch(googleSignInClient.signInIntent)
                     }
-                }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(54.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_google),
+                    contentDescription = "Google Logo",
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Sign in with Google",
+                    color = Color.Black,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 18.sp
+                )
             }
             Spacer(modifier = Modifier.height(24.dp))
             Text(
@@ -220,7 +207,7 @@ fun LottieDemo() {
         composition = composition,
         progress = progress,
         modifier = Modifier
-            .size(300.dp)
+            .size(350.dp)
     )
 }
 
