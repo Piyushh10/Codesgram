@@ -50,6 +50,7 @@ import com.example.codegram.model.leetcode.groups
 import com.example.codegram.ui.navigation.Screen
 import com.google.firebase.database.FirebaseDatabase
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
 fun UserListScreen(
@@ -76,7 +77,11 @@ fun UserListScreen(
 
     Column(
         modifier = Modifier
-            .background(Color(0xFFF6F8FB))
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
+                )
+            )
             .fillMaxSize()
             .systemBarsPadding()
     ) {
@@ -98,29 +103,28 @@ fun UserListScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 20.dp),
+                .padding(horizontal = 16.dp, vertical = 20.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Modern Chat Button
-            androidx.compose.material3.Surface(
+            Card(
                 shape = CircleShape,
-                shadowElevation = 8.dp,
-                color = Color.White,
-                tonalElevation = 4.dp,
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF2A2F4C)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 modifier = Modifier.size(64.dp)
             ) {
                 IconButton(
                     onClick = { null },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     Icon(
                         Icons.Default.ChatBubble,
                         contentDescription = "Chat",
-                        modifier = Modifier.size(32.dp),
-                        tint = Color.Black
+                        modifier = Modifier.size(28.dp),
+                        tint = Color(0xFF7AB2D3)
                     )
                 }
             }
@@ -128,11 +132,12 @@ fun UserListScreen(
             Spacer(modifier = Modifier.width(24.dp))
 
             // Modern Group Button
-            androidx.compose.material3.Surface(
+            Card(
                 shape = CircleShape,
-                shadowElevation = 8.dp,
-                color = Color.White,
-                tonalElevation = 4.dp,
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF2A2F4C)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 modifier = Modifier.size(64.dp)
             ) {
                 IconButton(
@@ -142,15 +147,13 @@ fun UserListScreen(
                             navController.navigate(Screen.GroupChat.createRoute(it.name))
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     Icon(
                         Icons.Default.Group,
                         contentDescription = "Group",
-                        modifier = Modifier.size(32.dp),
-                        tint = Color.Black
+                        modifier = Modifier.size(28.dp),
+                        tint = Color(0xFF7AB2D3)
                     )
                 }
             }
@@ -158,11 +161,12 @@ fun UserListScreen(
             Spacer(modifier = Modifier.width(24.dp))
 
             // Modern Avatar with border and shadow
-            androidx.compose.material3.Surface(
+            Card(
                 shape = CircleShape,
-                shadowElevation = 8.dp,
-                color = Color.White,
-                tonalElevation = 4.dp,
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF2A2F4C)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 modifier = Modifier.size(56.dp)
             ) {
                 AsyncImage(
@@ -171,7 +175,7 @@ fun UserListScreen(
                     modifier = Modifier
                         .size(50.dp)
                         .clip(CircleShape)
-                        .border(3.dp, Color.Black, CircleShape)
+                        .border(2.dp, Color(0xFF7AB2D3), CircleShape)
                         .clickable {
                             navController.navigate(Screen.LeetCodeStats.createRoute(username))
                         }
@@ -183,56 +187,60 @@ fun UserListScreen(
 
 @Composable
 fun UserItem(user: User, onClick: () -> Unit) {
-    // Elevated container with rounded corners
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clickable(onClick = onClick)
-    ){
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
+        ),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 5.dp)
-                .clickable(onClick = onClick)
-                .background(Color.White) // Shadow for elevation
-                .padding(12.dp) // Padding inside the row for spacing
-            ,
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar (Image) with rounded corners
+            // Avatar with modern styling
             AsyncImage(
                 model = user.avatar,
-                contentDescription = "",
+                contentDescription = "User Avatar",
                 modifier = Modifier
-                    .size(50.dp) // Slightly larger avatar
-                    .clip(CircleShape) // Circle shape for avatar
-                    .border(2.dp, Color.Gray, CircleShape) // Border around the avatar
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, Color(0xFF7AB2D3), CircleShape)
             )
 
-            // Spacer for spacing between the image and the text
-            Spacer(Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
-            // Vertical line between image and text
-            Divider(
-                color = Color.Gray,
-                modifier = Modifier
-                    .height(50.dp) // Match the height of the avatar
-                    .width(1.dp)  // Line thickness
-            )
+            // User info
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = user.username,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = "Tap to start chatting",
+                    color = Color.White.copy(alpha = 0.6f),
+                    fontSize = 12.sp
+                )
+            }
 
-            Spacer(Modifier.width(16.dp))
-
-            Text(
-                text = user.username,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
+            // Chat indicator
+            Icon(
+                Icons.Default.ChatBubble,
+                contentDescription = "Chat",
+                tint = Color(0xFF7AB2D3),
+                modifier = Modifier.size(20.dp)
             )
         }
-        Divider(
-            color = Color.LightGray,
-            thickness = 1.dp,
-            modifier = Modifier.fillMaxWidth(0.9f)
-                .align(Alignment.CenterHorizontally)
-        )
     }
 }
 

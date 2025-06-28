@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeNestedScroll
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,13 +30,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -72,6 +73,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -135,7 +139,11 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .background(Color(0xFFF6F8FB))
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
+                )
+            )
     ) {
         ModalNavigationDrawer(
             drawerContent = {
@@ -177,8 +185,6 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
-                    //NO IME PADDING
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -186,22 +192,83 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                         focusManager.clearFocus()
                     }
             ) {
-                // Header
-                Box {
-                    Image(
-                        painter = painterResource(R.drawable.logo),
-                        contentDescription = "Logo",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 10.dp)
-                            .imePadding()
-                    )
-
-                    IconButton(
-                        onClick = { scope.launch { drawerState.open() } },
-                        modifier = Modifier.padding(top = 36.dp, end = 3.dp)
+                // Modern Header
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    Color(0xFF1B1F3A),
+                                    Color(0xFF2A2F4C),
+                                    Color(0xFF3A3F5C)
+                                ),
+                                start = Offset(0f, 0f),
+                                end = Offset(1000f, 0f)
+                            )
+                        )
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .shadow(
+                            elevation = 8.dp,
+                            shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
+                            spotColor = Color.Black.copy(alpha = 0.3f)
+                        )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
+                        // Left side - App branding
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // App icon/logo
+                            Image(
+                                painter = painterResource(R.drawable.launcher),
+                                contentDescription = "App Logo",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clip(CircleShape)
+                            )
+                            
+                            Spacer(modifier = Modifier.width(12.dp))
+                            
+                            // App name and tagline
+                            Column {
+                                Text(
+                                    text = "Codesgram",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp,
+                                    fontFamily = FontFamily(Font(R.font.comforta_bold))
+                                )
+                                Text(
+                                    text = "Connect • Code • Grow",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                        
+                        // Right side - Menu button
+                        IconButton(
+                            onClick = { scope.launch { drawerState.open() } },
+                            modifier = Modifier
+                                .size(44.dp)
+                                .background(
+                                    Color.White.copy(alpha = 0.1f),
+                                    CircleShape
+                                )
+                        ) {
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = "Menu",
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
 
@@ -216,45 +283,90 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                         )
                     }
                 } else {
-                    // Chat Header
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                    // Modern Chat Header
+                    Box(
                         modifier = Modifier
-                            .padding(top = 20.dp)
-                            .background(Color.Black)
+                            .fillMaxWidth()
+                            .background(
+                                Brush.linearGradient(
+                                    colors = listOf(
+                                        Color(0xFF1B1F3A),
+                                        Color(0xFF2A2F4C),
+                                        Color(0xFF3A3F5C)
+                                    ),
+                                    start = Offset(0f, 0f),
+                                    end = Offset(1000f, 0f)
+                                )
+                            )
+                            .padding(horizontal = 16.dp, vertical = 12.dp)
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
+                                spotColor = Color.Black.copy(alpha = 0.3f)
+                            )
                     ) {
-                        IconButton(onClick = { receiver = null }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
-                        }
-
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        receiver?.avatar?.let { avatarUrl ->
-                            AsyncImage(
-                                model = avatarUrl,
-                                contentDescription = "Profile Picture",
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Back button
+                            IconButton(
+                                onClick = { receiver = null },
                                 modifier = Modifier
                                     .size(40.dp)
-                                    .clip(CircleShape)
-                                    .border(1.dp, Color.Gray, CircleShape)
-                                    .clickable {
-                                        navController.navigate(
-                                            Screen.LeetCodeStats.createRoute(
-                                                receiverUsername ?: "Unknown"
+                                    .background(
+                                        Color.White.copy(alpha = 0.1f),
+                                        CircleShape
+                                    )
+                            ) {
+                                Icon(
+                                    Icons.Default.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            // User avatar
+                            receiver?.avatar?.let { avatarUrl ->
+                                AsyncImage(
+                                    model = avatarUrl,
+                                    contentDescription = "Profile Picture",
+                                    modifier = Modifier
+                                        .size(44.dp)
+                                        .clip(CircleShape)
+                                        .border(2.dp, Color.White.copy(alpha = 0.3f), CircleShape)
+                                        .clickable {
+                                            navController.navigate(
+                                                Screen.LeetCodeStats.createRoute(
+                                                    receiverUsername ?: "Unknown"
+                                                )
                                             )
-                                        )
-                                    }
-                            )
+                                        }
+                                )
 
-                            Spacer(modifier = Modifier.width(10.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                            }
+
+                            // User info
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Text(
+                                    text = receiverUsername ?: "Unknown",
+                                    fontFamily = FontFamily(Font(R.font.comforta_bold)),
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    fontSize = 16.sp
+                                )
+                                Text(
+                                    text = "Tap to view profile",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 12.sp
+                                )
+                            }
                         }
-
-                        Text(
-                            text = "Messages with ${receiverUsername ?: "Unknown"}",
-                            fontFamily = FontFamily(Font(R.font.comforta_bold)),
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -270,36 +382,59 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                     }
 
                     // Input Row
-                    Row(
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
-                            .background(Color.Black),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
+                        ),
+                        shape = RoundedCornerShape(24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        TextField(
-                            value = message,
-                            onValueChange = { message = it },
-                            label = { Text("Type your message", color = Color.Gray) },
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .padding(8.dp),
-                            shape = RoundedCornerShape(20.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            )
-                        )
-                        IconButton(
-                            onClick = {
-                                senderId?.let {
-                                    chatHelper.sendMessage(it, receiver?.userId ?: "", message)
-                                }
-                                message = ""
-                            },
-                            modifier = Modifier.padding(8.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Filled.Send, contentDescription = "Send", tint = Color.White)
+                            TextField(
+                                value = message,
+                                onValueChange = { message = it },
+                                label = { Text("Type your message", color = Color.White.copy(alpha = 0.6f)) },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(20.dp),
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    focusedIndicatorColor = Color.Transparent,
+                                    unfocusedIndicatorColor = Color.Transparent,
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White
+                                ),
+                                textStyle = LocalTextStyle.current.copy(color = Color.White)
+                            )
+                            IconButton(
+                                onClick = {
+                                    senderId?.let {
+                                        chatHelper.sendMessage(it, receiver?.userId ?: "", message)
+                                    }
+                                    message = ""
+                                },
+                                modifier = Modifier
+                                    .size(44.dp)
+                                    .background(
+                                        Color(0xFF7AB2D3),
+                                        CircleShape
+                                    )
+                            ) {
+                                Icon(
+                                    Icons.Filled.Send,
+                                    contentDescription = "Send",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -346,22 +481,22 @@ fun PersonalMessageItem(message: ChatMessage, currentUserId: String?) {
                 Text(
                     text = senderName,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
             }
             Box(
                 modifier = Modifier
                     .background(
-                        if (isSentByCurrentUser) Color(0xFF7AB2D3) else Color(0xFFCCCCCC),
-                        shape = RoundedCornerShape(12.dp)
+                        if (isSentByCurrentUser) Color(0xFF7AB2D3) else Color(0xFF2A2F4C),
+                        shape = RoundedCornerShape(16.dp)
                     )
-                    .padding(10.dp)
+                    .padding(12.dp)
                     .widthIn(max = 250.dp)
             ) {
                 Text(
                     text = message.message,
-                    color = Color.White,
+                    color = if (isSentByCurrentUser) Color.White else Color.White,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
