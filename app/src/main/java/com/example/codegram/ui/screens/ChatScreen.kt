@@ -28,8 +28,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Web
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -73,9 +80,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.vector.ImageVector
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -176,7 +185,8 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                                 navController.navigate(Screen.Login.route)
                             }
                         }
-                    }
+                    },
+                    onClose = { scope.launch { drawerState.close() } }
                 )
             },
             drawerState = drawerState,
@@ -516,36 +526,98 @@ fun PersonalMessageItem(message: ChatMessage, currentUserId: String?) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DrawerContent(onItemClicked: (String) -> Unit) {
-    Column(
+fun DrawerContent(onItemClicked: (String) -> Unit, onClose: (() -> Unit)? = null) {
+    val items = listOf(
+        Triple("Striver SDE Sheet", Icons.Default.Star, "Top coding interview problems"),
+        Triple("A2Z Sheet", Icons.Default.MenuBook, "A2Z DSA Course"),
+        Triple("Neetcode 150", Icons.Default.List, "Neetcode practice list"),
+        Triple("Blind 75", Icons.Default.Web, "Blind 75 LeetCode"),
+        Triple("Interview Experiences", Icons.Default.Person, "Real interview stories"),
+        Triple("SignOut", Icons.Default.ExitToApp, "Sign out of your account")
+    )
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "Navigation",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        val items = listOf(
-            "Striver SDE Sheet",
-            "A2Z Sheet",
-            "Neetcode 150",
-            "Blind 75",
-            "Interview Experiences",
-            "SignOut"
-        )
-        items.forEach { item ->
-            Text(
-                text = item,
-                color = Color.White,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onItemClicked(item) }
-                    .padding(vertical = 8.dp)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xEE181B2C), Color(0xCC23274D))
+                )
             )
+            .padding(0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp)
+        ) {
+            // Top Row: Title and Close Button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Resources",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                if (onClose != null) {
+                    IconButton(onClick = onClose) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            items.forEach { (item, icon, subtitle) ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp)
+                        .clickable { onItemClicked(item) },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF23274D).copy(alpha = 0.85f)
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = item,
+                            tint = Color(0xFF7AB2D3),
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = item,
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.Bold
+                            )
+                            if (subtitle.isNotBlank()) {
+                                Text(
+                                    text = subtitle,
+                                    color = Color.White.copy(alpha = 0.6f),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "Go",
+                            tint = Color.White.copy(alpha = 0.5f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }
