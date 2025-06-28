@@ -99,6 +99,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material3.TextButton
+import com.example.codegram.ui.theme.dimens
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -656,8 +657,7 @@ fun DrawerContent(onItemClicked: (String) -> Unit, onClose: (() -> Unit)? = null
         Triple("A2Z Sheet", Icons.Default.MenuBook, "A2Z DSA Course"),
         Triple("Neetcode 150", Icons.Default.List, "Neetcode practice list"),
         Triple("Blind 75", Icons.Default.Web, "Blind 75 LeetCode"),
-        Triple("Interview Experiences", Icons.Default.Person, "Real interview stories"),
-        Triple("SignOut", Icons.Default.ExitToApp, "Sign out of your account")
+        Triple("Interview Experiences", Icons.Default.Person, "Real interview stories")
     )
     Box(
         modifier = Modifier
@@ -672,7 +672,7 @@ fun DrawerContent(onItemClicked: (String) -> Unit, onClose: (() -> Unit)? = null
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp)
+                .padding(MaterialTheme.dimens.medium2)
         ) {
             // Top Row: Title and Close Button
             Row(
@@ -692,7 +692,7 @@ fun DrawerContent(onItemClicked: (String) -> Unit, onClose: (() -> Unit)? = null
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(MaterialTheme.dimens.medium2))
             items.forEach { (item, icon, subtitle) ->
                 Card(
                     modifier = Modifier
@@ -740,6 +740,40 @@ fun DrawerContent(onItemClicked: (String) -> Unit, onClose: (() -> Unit)? = null
                             modifier = Modifier.size(20.dp)
                         )
                     }
+                }
+            }
+            // Sign Out button at the bottom (improved only this part)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+                    .clickable { onItemClicked("SignOut") },
+                colors = CardDefaults.cardColors(containerColor = Color(0x22EB5757)), // Slightly red-tinted background
+                border = BorderStroke(1.5.dp, Color(0xFFEB5757)),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ExitToApp,
+                        contentDescription = "Sign Out",
+                        tint = Color(0xFFEB5757),
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Sign Out",
+                        color = Color(0xFFEB5757),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        maxLines = 1
+                    )
                 }
             }
         }

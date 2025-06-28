@@ -415,8 +415,11 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
                 TextField(
                     value = message,
                     onValueChange = { message = it },
-                    label = { Text("Type your message", color = Color.White.copy(alpha = 0.6f)) },
-                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Type your message", color = Color.White.copy(alpha = 0.6f)) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 40.dp)
+                        .align(Alignment.CenterVertically),
                     shape = RoundedCornerShape(20.dp),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,

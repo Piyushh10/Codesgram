@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -156,10 +157,11 @@ fun UserListScreen(
                 TextField(
                     value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    label = { Text("Search users...", color = Color.White.copy(alpha = 0.6f)) },
+                    placeholder = { Text("Search users...", color = Color.White.copy(alpha = 0.6f)) },
                     modifier = Modifier
                         .weight(1f)
-                        .height(40.dp),
+                        .heightIn(min = 40.dp)
+                        .align(Alignment.CenterVertically),
                     shape = RoundedCornerShape(16.dp),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
