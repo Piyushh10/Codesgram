@@ -85,6 +85,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.activity.compose.BackHandler
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -142,6 +143,11 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
         if (messages.isNotEmpty()) {
             listState.scrollToItem(messages.size - 1)
         }
+    }
+
+    // Handle system back button: if in chat, go back to user list
+    BackHandler(enabled = receiver != null) {
+        receiver = null
     }
 
     Column(
