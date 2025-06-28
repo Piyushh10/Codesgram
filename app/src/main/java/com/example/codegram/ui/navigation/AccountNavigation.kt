@@ -23,6 +23,46 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import com.example.codegram.R
+
+@Composable
+fun SplashScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(R.drawable.launcher),
+                contentDescription = "App Logo",
+                modifier = Modifier.size(100.dp)
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            CircularProgressIndicator(color = Color(0xFF7AB2D3))
+        }
+    }
+}
 
 @Composable
 fun AccountNavigation() {
@@ -53,7 +93,9 @@ fun AccountNavigation() {
         }
     }
 
-    if (startDestination != null) {
+    if (startDestination == null) {
+        SplashScreen()
+    } else {
         NavHost(navController = navController, startDestination = startDestination!!) {
             composable(Screen.Login.route) { LoginScreen(navController) }
             composable("LeetCodeUsernameInputScreen") { LeetCodeUsernameInputScreen(navController) }
