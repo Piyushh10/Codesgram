@@ -108,6 +108,17 @@ fun UserListScreen(
         }
     }
 
+    // --- Enhanced Search Filtering ---
+    val filteredUsers = if (searchQuery.isBlank()) {
+        users
+    } else {
+        val query = searchQuery.trim().lowercase()
+        users.filter { user ->
+            user.username.lowercase().contains(query) ||
+            user.email.lowercase().contains(query)
+        }
+    }
+
     Column(
         modifier = Modifier
             .background(
@@ -175,7 +186,7 @@ fun UserListScreen(
         }
         Spacer(modifier = Modifier.height(10.dp))
         LazyColumn {
-            if (users.isEmpty() && searchQuery.isNotBlank()) {
+            if (filteredUsers.isEmpty() && searchQuery.isNotBlank()) {
                 item {
                     Card(
                         modifier = Modifier
@@ -201,7 +212,7 @@ fun UserListScreen(
                     }
                 }
             } else {
-                items(users) { user ->
+                items(filteredUsers) { user ->
                     UserItem(user = user, onClick = { onUserClick(user) })
                 }
                 // Pagination: Load More button
