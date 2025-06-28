@@ -321,23 +321,13 @@ fun ChatScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFF1B1F3A),
-                                Color(0xFF2A2F4C),
-                                Color(0xFF3A3F5C)
-                            ),
-                            start = Offset(0f, 0f),
-                            end = Offset(1000f, 0f)
-                        )
+                    .background(Color(0xFF23274D))
+                    .border(
+                        width = 0.5.dp,
+                        color = Color(0xFF7AB2D3),
+                        shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                     )
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
-                        spotColor = Color.Black.copy(alpha = 0.3f)
-                    )
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -353,21 +343,16 @@ fun ChatScreen(
                         },
                         modifier = Modifier
                             .size(40.dp)
-                            .background(
-                                Color.White.copy(alpha = 0.1f),
-                                CircleShape
-                            )
+                            .background(Color(0xFF7AB2D3).copy(alpha = 0.12f), CircleShape)
                     ) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "Back",
-                            tint = Color.White,
+                            tint = Color(0xFF7AB2D3),
                             modifier = Modifier.size(20.dp)
                         )
                     }
-
                     Spacer(modifier = Modifier.width(12.dp))
-
                     // User avatar
                     receiver?.avatar?.let { avatarUrl ->
                         AsyncImage(
@@ -385,10 +370,8 @@ fun ChatScreen(
                                     )
                                 }
                         )
-
                         Spacer(modifier = Modifier.width(12.dp))
                     }
-
                     // User info
                     Column(
                         modifier = Modifier.weight(1f)
@@ -397,8 +380,8 @@ fun ChatScreen(
                             text = receiverUsername ?: "Unknown",
                             fontFamily = FontFamily(Font(R.font.comforta_bold)),
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
-                            fontSize = 16.sp
+                            color = Color(0xFF7AB2D3),
+                            fontSize = 17.sp
                         )
                         Text(
                             text = "Tap to view profile",
