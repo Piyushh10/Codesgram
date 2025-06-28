@@ -22,7 +22,7 @@ import androidx.core.view.WindowCompat
 import com.example.codegram.MainActivity
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = Purple40,
     secondary = PurpleGrey80,
     tertiary = Blue
 )
@@ -64,8 +64,11 @@ fun CoderoomsTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            // Always use the dark color scheme's primary color for system bars
+            val darkPrimary = DarkColorScheme.primary.toArgb()
+            window.statusBarColor = darkPrimary
+            window.navigationBarColor = darkPrimary
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
         }
     }
 

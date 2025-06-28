@@ -21,8 +21,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AccountNavigation()
-//        LeetCodeProfileScreen(username = "vir_s_ingh")
-//        UserProfileScreen(userViewModel, "raghavvbagdi")
         }
     }
 }
