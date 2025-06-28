@@ -247,11 +247,17 @@ fun AccountNavigation() {
                             label = { Text("Profile") },
                             selected = currentRoute?.startsWith("LeetCodeStatsScreen") == true,
                             onClick = {
-                                leetCodeUsername?.let { username ->
-                                    if (username.isNotBlank()) {
-                                        navController.navigate(Screen.LeetCodeStats.createRoute(username)) {
-                                            popUpTo(Screen.Chat.route)
-                                            launchSingleTop = true
+                                val currentUser = FirebaseAuth.getInstance().currentUser
+                                val currentUserId = currentUser?.uid
+                                if (currentUserId != null) {
+                                    val dbRef = FirebaseDatabase.getInstance().getReference("users").child(currentUserId)
+                                    dbRef.child("leetCodeUsername").get().addOnSuccessListener { snapshot ->
+                                        val username = snapshot.getValue(String::class.java)
+                                        if (!username.isNullOrBlank()) {
+                                            navController.navigate(Screen.LeetCodeStats.createRoute(username)) {
+                                                popUpTo(Screen.Chat.route)
+                                                launchSingleTop = true
+                                            }
                                         }
                                     }
                                 }

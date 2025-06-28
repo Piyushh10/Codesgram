@@ -91,6 +91,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.foundation.layout.heightIn
@@ -496,18 +497,27 @@ fun PersonalMessageItem(message: ChatMessage, currentUserId: String?) {
                 contentDescription = "Sender Avatar",
                 modifier = Modifier
                     .size(36.dp)
+                    .aspectRatio(1f)
                     .clip(CircleShape)
             )
             Spacer(Modifier.width(8.dp))
         }
         Column(horizontalAlignment = if (isSentByCurrentUser) Alignment.End else Alignment.Start) {
+            // Username always above message
+            Text(
+                text = senderName,
+                color = Color.White.copy(alpha = 0.6f),
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
             if (isCode && codeContent != null) {
                 var showDialog by remember { mutableStateOf(false) }
                 val preview = codeContent.lines().take(5).joinToString("\n").take(200) + if (codeContent.length > 200 || codeContent.lines().size > 5) "\n..." else ""
                 Card(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .widthIn(max = 320.dp),
+                        .padding(4.dp)
+                        .widthIn(max = 300.dp), // Increased width for better use of space
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF23274D)),
                     shape = RoundedCornerShape(10.dp),
                     border = BorderStroke(1.5.dp, Color(0xFF7AB2D3)),
@@ -614,7 +624,7 @@ fun PersonalMessageItem(message: ChatMessage, currentUserId: String?) {
                             shape = RoundedCornerShape(16.dp)
                         )
                         .padding(12.dp)
-                        .widthIn(max = 250.dp)
+                        .widthIn(max = 300.dp) // Increased width for better use of space
                 ) {
                     Text(
                         text = message.message,
@@ -631,6 +641,7 @@ fun PersonalMessageItem(message: ChatMessage, currentUserId: String?) {
                 contentDescription = "Your Avatar",
                 modifier = Modifier
                     .size(36.dp)
+                    .aspectRatio(1f)
                     .clip(CircleShape)
             )
         }

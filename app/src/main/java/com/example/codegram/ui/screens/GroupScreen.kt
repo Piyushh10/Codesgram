@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -60,6 +61,7 @@ import com.example.codegram.R
 import com.example.codegram.chat.ChatHelper
 import com.example.codegram.model.ChatMessage
 import com.example.codegram.model.leetcode.Group
+import com.example.codegram.model.leetcode.groups
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import coil.compose.AsyncImage
@@ -86,27 +88,72 @@ import androidx.compose.material3.TextButton
 fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavController) {
     val focusManager = LocalFocusManager.current
     var message by remember { mutableStateOf("") }
-    val senderId = FirebaseAuth.getInstance().currentUser?.uid
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val senderId = currentUser?.uid
     var messages by remember { mutableStateOf<List<ChatMessage>>(emptyList()) }
     val listState = rememberLazyListState()
     val dbGrp = FirebaseDatabase.getInstance().getReference("groups").child(senderId!!).child("groupName")
-    var groupName by remember { mutableStateOf("") }
+    var groupName by remember { mutableStateOf(group.name) }
     var username by remember { mutableStateOf("") }
-    val db = FirebaseDatabase.getInstance().getReference("groupMessages").child(groupName).child("senderId")
+    val db = FirebaseDatabase.getInstance()
     var showMembersDialog by remember { mutableStateOf(false) }
     var groupMembers by remember { mutableStateOf<List<Pair<String, String?>>>(emptyList()) } // Pair<username, avatarUrl>
 
     // Fetch messages for this group and scroll to the latest message when messages change
     LaunchedEffect(senderId) {
+        if (senderId != null) {
+            val groupsRef = db.getReference("groups")
+            // Ensure all three groups exist
+            val groupList = listOf(
+                mapOf("name" to "Beginner"),
+                mapOf("name" to "Intermediate"),
+                mapOf("name" to "Advanced")
+            )
+            groupList.forEach { groupMap ->
+                val groupName = groupMap["name"] as String
+                groupsRef.child(groupName).get().addOnSuccessListener { snapshot ->
+                    if (!snapshot.exists()) {
+                        groupsRef.child(groupName).setValue(mapOf("name" to groupName, "members" to mapOf<String, Boolean>()))
+                    }
+                }
+            }
+            // Fetch user stats and add to correct group
+            val userRef = db.getReference("users").child(senderId)
+            userRef.get().addOnSuccessListener { userSnap ->
+                val rating = userSnap.child("rating").getValue(Int::class.java) ?: 0
+                val totalSolved = userSnap.child("totalSolved").getValue(Int::class.java) ?: 0
+                val decidedGroup = groups.find { group ->
+                    rating in group.minRating..group.maxRating || totalSolved in group.minSolved..group.maxSolved
+                } ?: groups.first() // fallback to Beginner if not found
+                val groupNameValue = decidedGroup.name
+                // Always use DatabaseReference for writing
+                val groupRef = db.getReference("groups").child(groupNameValue)
+                groupRef.child("members").child(senderId).setValue(true)
+                // Write the group name to groups/{senderId}/groupName
+                db.getReference("groups").child(senderId).child("groupName").setValue(groupNameValue)
+                // Optionally update groupName if different
+                if (groupName != groupNameValue) groupName = groupNameValue
+                // Update user profile with rating, totalSolved, and group
+                val userProfileUpdate = mapOf(
+                    "rating" to rating,
+                    "totalSolved" to totalSolved,
+                    "group" to groupNameValue
+                )
+                db.getReference("users").child(senderId).updateChildren(userProfileUpdate)
+            }
+        }
         dbGrp.get().addOnSuccessListener { snapshot->
-            groupName = snapshot.getValue(String::class.java).toString()?: "Unknown"
+            val fetched = snapshot.getValue(String::class.java).toString()
+            if (fetched.isNotBlank() && fetched != "null" && fetched != "Unknown" && groupName != fetched) {
+                groupName = fetched
+            }
             // Add user to group members node if not already present
             if (groupName.isNotBlank() && groupName != "null" && groupName != "Unknown") {
                 val membersRef = FirebaseDatabase.getInstance().getReference("groups").child(groupName).child("members").child(senderId)
                 membersRef.setValue(true)
             }
         }
-        db.get().addOnSuccessListener { snapshot->
+        db.getReference("groupMessages").child(groupName).child("senderId").get().addOnSuccessListener { snapshot->
             username = snapshot.getValue(String::class.java).toString()
         }
     }
@@ -171,7 +218,7 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = if (groupName.isBlank() || groupName == "null" || groupName == "Unknown") "Loading..." else groupName,
+                        text = groupName,
                         fontFamily = FontFamily(Font(R.font.comforta_bold)),
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF7AB2D3),
@@ -291,7 +338,7 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
                                                     modifier = Modifier
                                                         .size(48.dp)
                                                         .clip(CircleShape)
-                                                        .border(2.dp, Color(0xFF7AB2D3), CircleShape)
+                                                        .aspectRatio(1f)
                                                 )
                                             }
                                             Spacer(modifier = Modifier.width(14.dp))
@@ -440,18 +487,27 @@ fun GroupMessageItems(message: ChatMessage) {
                 contentDescription = "Sender Avatar",
                 modifier = Modifier
                     .size(36.dp)
+                    .aspectRatio(1f)
                     .clip(CircleShape)
             )
             Spacer(Modifier.width(8.dp))
         }
         Column(horizontalAlignment = if (isSentByCurrentUser) Alignment.End else Alignment.Start) {
+            // Username always above message
+            Text(
+                text = senderName,
+                color = Color.White.copy(alpha = 0.6f),
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
             if (isCode && codeContent != null) {
                 var showDialog by remember { mutableStateOf(false) }
                 val preview = codeContent.lines().take(5).joinToString("\n").take(200) + if (codeContent.length > 200 || codeContent.lines().size > 5) "\n..." else ""
                 Card(
                     modifier = Modifier
-                        .padding(8.dp)
-                        .widthIn(max = 320.dp),
+                        .padding(4.dp)
+                        .widthIn(max = 300.dp), // Increased width for better use of space
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF23274D)),
                     shape = RoundedCornerShape(10.dp),
                     border = BorderStroke(1.5.dp, Color(0xFF7AB2D3)),
@@ -558,7 +614,7 @@ fun GroupMessageItems(message: ChatMessage) {
                             shape = RoundedCornerShape(16.dp)
                         )
                         .padding(12.dp)
-                        .widthIn(max = 250.dp)
+                        .widthIn(max = 300.dp) // Increased width for better use of space
                 ) {
                     Text(
                         text = message.message,
@@ -575,6 +631,7 @@ fun GroupMessageItems(message: ChatMessage) {
                 contentDescription = "Your Avatar",
                 modifier = Modifier
                     .size(36.dp)
+                    .aspectRatio(1f)
                     .clip(CircleShape)
             )
         }

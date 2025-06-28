@@ -10,6 +10,6 @@ data class Group(
 
 val groups = listOf(
     Group("Beginner", 0, 1400, 0, 200),
-    Group("Intermediate", 1401, 1700, 201, 400),
-    Group("Advanced", 1701, Int.MAX_VALUE, 401, Int.MAX_VALUE)
+    Group("Intermediate", 1401, 1700, 201, 500),
+    Group("Advanced", 1701, Int.MAX_VALUE, 501, Int.MAX_VALUE)
 )
