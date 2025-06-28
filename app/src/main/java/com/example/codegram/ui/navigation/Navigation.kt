@@ -3,9 +3,6 @@ package com.example.codegram.ui.navigation
 sealed class Screen(val route: String) {
     object Login : Screen("LoginScreen")
     object SignUp : Screen("SignUpScreen")
-    object UserProfile : Screen("UserProfileScreen/{username}") {
-        fun createRoute(username: String) = "UserProfileScreen/$username"
-    }
     object LeetCodeStats : Screen("LeetCodeStatsScreen/{username}") {
         fun createRoute(username: String) = "LeetCodeStatsScreen/$username"
     }

@@ -8,12 +8,10 @@ import androidx.activity.viewModels
 import com.example.codegram.chat.ChatHelper
 import com.example.codegram.ui.navigation.AccountNavigation
 import com.example.codegram.viewmodel.LeetCodeStatsViewModel
-import com.example.codegram.viewmodel.UserProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
 import androidx.core.view.WindowCompat
 
 class MainActivity : ComponentActivity() {
-    private val userViewModel: UserProfileViewModel by viewModels()
     private val leetCodeViewModel:LeetCodeStatsViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
     private lateinit var chatHelper: ChatHelper

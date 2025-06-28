@@ -36,32 +36,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.codegram.model.leetcode.Submission
+import com.example.codegram.model.leetcode.UserProfile
 import com.example.codegram.ui.theme.dimens
 import com.example.codegram.viewmodel.LeetCodeStatsViewModel
-import com.example.codegram.viewmodel.UserProfileViewModel
+import com.example.codegram.retrofit.ApiService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
 @Composable
-fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String, viewmodel: UserProfileViewModel) {
+fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String) {
     val leetCodeStats by viewModel.leetCodeStats.observeAsState()
-    val userProfileStats by viewmodel.userProfile.observeAsState()
     val contestRating by viewModel.contestRating.observeAsState()
     val recentSubmission by viewModel.recentSubmissions.observeAsState(emptyList())
+    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
 
     LaunchedEffect(username) {
         Log.d("LeetCodeStatsScreen", "Username: $username")
         viewModel.fetchLeetCodeStats(username)
         viewModel.fetchRating(username)
-        viewmodel.fetchUserProfile(username)
         viewModel.fetchRecentSubmissions(username)
+
+        // Fetch user profile directly
+        try {
+            userProfile = ApiService.leetCodeApi.userProfile(username)
+        } catch (e: Exception) {
+            Log.e("LeetCodeStatsScreen", "Error fetching user profile", e)
+        }
 
         // Update group in Firebase
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
             try {
-                val leetCodeStats = com.example.codegram.retrofit.ApiService.leetCodeApi.getProfile(username)
-                val userProfile = com.example.codegram.retrofit.ApiService.leetCodeApi.userProfile(username)
+                val leetCodeStats = ApiService.leetCodeApi.getProfile(username)
+                val userProfile = ApiService.leetCodeApi.userProfile(username)
                 val rating = userProfile.ranking
                 val totalSolved = leetCodeStats.totalSolved
                 val group = when {
@@ -84,7 +91,7 @@ fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String, vie
             .padding(start = 15.dp, top = MaterialTheme.dimens.large)
     ) {
         leetCodeStats?.let { stats ->
-            userProfileStats?.let { profile ->
+            userProfile?.let { profile ->
                 contestRating?.let { contest ->
                     Box(
                         modifier = Modifier
@@ -107,7 +114,7 @@ fun LeetCodeStatsScreen(viewModel: LeetCodeStatsViewModel, username: String, vie
                                     horizontalArrangement = Arrangement.Start,
                                 ) {
                                     AsyncImage(
-                                        model = userProfileStats?.avatar,
+                                        model = profile.avatar,
                                         contentDescription = "",
                                         modifier = Modifier
                                             .size(64.dp)
