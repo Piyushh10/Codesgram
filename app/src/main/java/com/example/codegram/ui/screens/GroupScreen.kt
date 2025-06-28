@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeNestedScroll
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -21,12 +22,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +42,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -53,10 +62,12 @@ import com.google.firebase.database.FirebaseDatabase
 import coil.compose.AsyncImage
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LocalTextStyle
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GroupChatScreen(group: Group, chatHelper: ChatHelper) {
+fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavController) {
     val focusManager = LocalFocusManager.current
     var message by remember { mutableStateOf("") }
     val senderId = FirebaseAuth.getInstance().currentUser?.uid
@@ -77,11 +88,9 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper) {
         }
     }
 
-
     chatHelper.listenToGroupMessages(groupName) { newMessages ->
         messages = newMessages.reversed()
     }
-
 
     LaunchedEffect(messages) {
         if (messages.isNotEmpty()) {
@@ -93,11 +102,11 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper) {
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .background(Color(0xFFF6F8FB))
-            .padding(8.dp)
-            .padding(top = 20.dp)
-            .imePadding()
-            .imeNestedScroll()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
+                )
+            )
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }
@@ -105,71 +114,144 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper) {
                 focusManager.clearFocus()
             }
     ) {
-        // App Bar
-        Surface(
-            tonalElevation = 4.dp,
-            shadowElevation = 4.dp,
-            color = Color(0xFF1976D2),
-            modifier = Modifier.fillMaxWidth()
+        // Modern Group Chat Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Color(0xFF1B1F3A),
+                            Color(0xFF2A2F4C),
+                            Color(0xFF3A3F5C)
+                        ),
+                        start = Offset(0f, 0f),
+                        end = Offset(1000f, 0f)
+                    )
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
+                    spotColor = Color.Black.copy(alpha = 0.3f)
+                )
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(16.dp)
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = if (groupName.isBlank() || groupName == "null" || groupName == "Unknown") "Loading..." else groupName,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
-                )
+                // Back button
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(
+                            Color.White.copy(alpha = 0.1f),
+                            CircleShape
+                        )
+                ) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Group info
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = if (groupName.isBlank() || groupName == "null" || groupName == "Unknown") "Loading..." else groupName,
+                        fontFamily = FontFamily(Font(R.font.comforta_bold)),
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = "Group Chat",
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 12.sp
+                    )
+                }
             }
         }
 
-        // Messages list with LazyColumgit n
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Messages list with LazyColumn
         LazyColumn(
             state = listState,
             modifier = Modifier.weight(1f)
         ) {
             items(messages) { message ->
-                MessageItems(message = message)
+                GroupMessageItems(message = message)
             }
         }
 
-        // Message input row
-        Row(
+        // Modern Message input row
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = 8.dp)
+                .padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
+            ),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
-            TextField(
-                value = message,
-                onValueChange = { message = it },
-                label = { Text("Type your message") },
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(topEnd = 20.dp)
-            )
-            IconButton(
-                onClick = {
-                    senderId.let {
-                        chatHelper.sendMessageToGroup(groupName, message)
-                    }
-                    message = "" // Clear the input field
-                }
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.send),
-                    contentDescription = "Send",
-                    Modifier.size(30.dp)
+                TextField(
+                    value = message,
+                    onValueChange = { message = it },
+                    label = { Text("Type your message", color = Color.White.copy(alpha = 0.6f)) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    ),
+                    textStyle = LocalTextStyle.current.copy(color = Color.White)
                 )
+                IconButton(
+                    onClick = {
+                        senderId.let {
+                            chatHelper.sendMessageToGroup(groupName, message)
+                        }
+                        message = "" // Clear the input field
+                    },
+                    modifier = Modifier
+                        .size(44.dp)
+                        .background(
+                            Color(0xFF7AB2D3),
+                            CircleShape
+                        )
+                ) {
+                    Icon(
+                        Icons.Filled.Send,
+                        contentDescription = "Send",
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun MessageItems(message: ChatMessage) {
+fun GroupMessageItems(message: ChatMessage) {
     val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
     val isSentByCurrentUser = message.senderId == currentUserId
     var senderAvatar by remember { mutableStateOf<String?>(null) }
@@ -207,17 +289,17 @@ fun MessageItems(message: ChatMessage) {
                 Text(
                     text = senderName,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
             }
             Box(
                 modifier = Modifier
                     .background(
-                        if (isSentByCurrentUser) Color(0xFF7AB2D3) else Color(0xFFCCCCCC),
-                        shape = RoundedCornerShape(12.dp)
+                        if (isSentByCurrentUser) Color(0xFF7AB2D3) else Color(0xFF2A2F4C),
+                        shape = RoundedCornerShape(16.dp)
                     )
-                    .padding(10.dp)
+                    .padding(12.dp)
                     .widthIn(max = 250.dp)
             ) {
                 Text(

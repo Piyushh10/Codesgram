@@ -54,7 +54,7 @@ fun AccountNavigation() {
                 val chatHelper = ChatHelper(db, LocalContext.current)
                 val selectedGroup = groups.find { it.name == groupName }
                 if (selectedGroup != null) {
-                    GroupChatScreen(group = selectedGroup, chatHelper = chatHelper)
+                    GroupChatScreen(group = selectedGroup, chatHelper = chatHelper, navController = navController)
                 }
             }
         }
