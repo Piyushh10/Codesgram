@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,12 +22,17 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -66,8 +72,20 @@ fun UserListScreen(
         end = Offset(1000f, 1000f)
     )
     var users by remember { mutableStateOf<List<User>>(emptyList()) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var isSearchVisible by remember { mutableStateOf(false) }
     val db = FirebaseDatabase.getInstance().getReference("users").child(currentUserId).child("username")
     var username by remember { mutableStateOf("") }
+
+    // Filter users based on search query
+    val filteredUsers = if (searchQuery.isBlank()) {
+        users
+    } else {
+        users.filter { user ->
+            user.username.contains(searchQuery, ignoreCase = true)
+        }
+    }
 
     LaunchedEffect(currentUserId) {
         db.get().addOnSuccessListener { snapshot->
@@ -93,8 +111,86 @@ fun UserListScreen(
         }
 
         LazyColumn {
-            items(users) { user ->
-                UserItem(user = user, onClick = { onUserClick(user) })
+            if (filteredUsers.isEmpty() && searchQuery.isNotBlank()) {
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No users found for '$searchQuery'",
+                                color = Color.White.copy(alpha = 0.7f),
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+            } else {
+                items(filteredUsers) { user ->
+                    UserItem(user = user, onClick = { onUserClick(user) })
+                }
+            }
+        }
+
+        // Search Bar (appears when search is active)
+        if (isSearchVisible) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF2A2F4C).copy(alpha = 0.9f)
+                ),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        label = { Text("Search users...", color = Color.White.copy(alpha = 0.6f)) },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
+                        ),
+                        textStyle = LocalTextStyle.current.copy(color = Color.White)
+                    )
+                    IconButton(
+                        onClick = { 
+                            searchQuery = ""
+                            isSearchVisible = false 
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Close Search",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             }
         }
 
@@ -107,24 +203,29 @@ fun UserListScreen(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Modern Chat Button
+            // Search Users Button
             Card(
                 shape = CircleShape,
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF2A2F4C)
+                    containerColor = if (isSearchVisible) Color(0xFF7AB2D3) else Color(0xFF2A2F4C)
                 ),
                 elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
                 modifier = Modifier.size(64.dp)
             ) {
                 IconButton(
-                    onClick = { null },
+                    onClick = { 
+                        isSearchVisible = !isSearchVisible
+                        if (!isSearchVisible) {
+                            searchQuery = ""
+                        }
+                    },
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Icon(
-                        Icons.Default.ChatBubble,
-                        contentDescription = "Chat",
+                        Icons.Default.Search,
+                        contentDescription = "Search Users",
                         modifier = Modifier.size(28.dp),
-                        tint = Color(0xFF7AB2D3)
+                        tint = if (isSearchVisible) Color.White else Color(0xFF7AB2D3)
                     )
                 }
             }
@@ -173,7 +274,7 @@ fun UserListScreen(
                     model = currentUserAvatar,
                     contentDescription = "Current User Avatar",
                     modifier = Modifier
-                        .size(50.dp)
+                        .fillMaxSize()
                         .clip(CircleShape)
                         .border(2.dp, Color(0xFF7AB2D3), CircleShape)
                         .clickable {
