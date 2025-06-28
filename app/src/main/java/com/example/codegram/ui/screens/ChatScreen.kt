@@ -576,21 +576,24 @@ fun PersonalMessageItem(message: ChatMessage, currentUserId: String?) {
                                     )
                                 }
                             }
-                            // Code preview
-                            Text(
-                                text = preview,
-                                color = Color(0xFFc9d1d9),
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 13.sp,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
-                            )
+                            // Code preview (with clickable overlay)
+                            Box {
+                                Text(
+                                    text = preview,
+                                    color = Color(0xFFc9d1d9),
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier
+                                        .padding(horizontal = 10.dp, vertical = 8.dp)
+                                        .fillMaxWidth()
+                                )
+                                Box(
+                                    Modifier
+                                        .matchParentSize()
+                                        .clickable { showDialog = true }
+                                )
+                            }
                         }
-                        // Clickable overlay
-                        Box(
-                            Modifier
-                                .matchParentSize()
-                                .clickable { showDialog = true }
-                        )
                     }
                 }
                 if (showDialog) {

@@ -47,7 +47,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -183,7 +183,7 @@ fun AccountNavigation() {
                     ) {
                         // Leaderboard first
                         NavigationBarItem(
-                            icon = { Icon(Icons.Default.Star, contentDescription = "Leaderboard") },
+                            icon = { Icon(Icons.Default.Leaderboard, contentDescription = "Leaderboard") },
                             label = { Text("Leetboard") },
                             selected = currentRoute == Screen.Leaderboard.route,
                             onClick = {

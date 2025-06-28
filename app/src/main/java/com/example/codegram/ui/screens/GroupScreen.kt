@@ -248,58 +248,85 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
         if (showMembersDialog) {
             AlertDialog(
                 onDismissRequest = { showMembersDialog = false },
-                title = { Text("Group Members", color = Color.White) },
+                title = null,
                 text = {
                     Column(
-                        modifier = Modifier.background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
-                            )
-                        )
+                        modifier = Modifier
+                            .background(Color(0xFF23274D), RoundedCornerShape(16.dp))
+                            .padding(top = 0.dp, bottom = 0.dp, start = 0.dp, end = 0.dp)
                     ) {
+                        // Top bar
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xFF2A2F4C), RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Group,
+                                contentDescription = null,
+                                tint = Color(0xFF7AB2D3),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Group Members",
+                                color = Color(0xFF7AB2D3),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
                         if (groupMembers.isEmpty()) {
-                            Text("No members found.", color = Color.White.copy(alpha = 0.7f))
+                            Text(
+                                "No members found.",
+                                color = Color.White.copy(alpha = 0.7f),
+                                modifier = Modifier.padding(16.dp)
+                            )
                         } else {
-                            groupMembers.forEach { (username, avatar) ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                                    colors = CardDefaults.cardColors(
-                                        containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
-                                    ),
-                                    shape = RoundedCornerShape(12.dp),
-                                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                                ) {
-                                    Row(
+                            Column(modifier = Modifier.padding(bottom = 8.dp)) {
+                                groupMembers.forEach { (username, avatar) ->
+                                    Card(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(16.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = Color(0xFF2A2F4C).copy(alpha = 0.95f)
+                                        ),
+                                        shape = RoundedCornerShape(12.dp),
+                                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                                     ) {
-                                        if (avatar != null) {
-                                            AsyncImage(
-                                                model = avatar,
-                                                contentDescription = "Avatar",
-                                                modifier = Modifier
-                                                    .size(56.dp)
-                                                    .clip(CircleShape)
-                                                    .border(2.dp, Color(0xFF7AB2D3), CircleShape)
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.width(16.dp))
-                                        Column(modifier = Modifier.weight(1f)) {
-                                            Text(
-                                                text = username,
-                                                color = Color.White,
-                                                fontWeight = FontWeight.Bold,
-                                                fontSize = 16.sp
-                                            )
-                                            Text(
-                                                text = "Group member",
-                                                color = Color.White.copy(alpha = 0.6f),
-                                                fontSize = 12.sp
-                                            )
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(14.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            if (avatar != null) {
+                                                AsyncImage(
+                                                    model = avatar,
+                                                    contentDescription = "Avatar",
+                                                    modifier = Modifier
+                                                        .size(48.dp)
+                                                        .clip(CircleShape)
+                                                        .border(2.dp, Color(0xFF7AB2D3), CircleShape)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(14.dp))
+                                            Column(modifier = Modifier.weight(1f)) {
+                                                Text(
+                                                    text = username,
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 15.sp
+                                                )
+                                                Text(
+                                                    text = "Group member",
+                                                    color = Color.White.copy(alpha = 0.6f),
+                                                    fontSize = 12.sp
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -308,11 +335,23 @@ fun GroupChatScreen(group: Group, chatHelper: ChatHelper, navController: NavCont
                     }
                 },
                 confirmButton = {
-                    Button(onClick = { showMembersDialog = false }) {
-                        Text("Close")
+                    TextButton(onClick = { showMembersDialog = false }) {
+                        Icon(
+                            imageVector = Icons.Default.Group,
+                            contentDescription = null,
+                            tint = Color(0xFF7AB2D3),
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            "Close",
+                            color = Color(0xFF7AB2D3),
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 },
-                containerColor = Color(0xFF23274D)
+                containerColor = Color(0xFF23274D),
+                shape = RoundedCornerShape(16.dp)
             )
         }
 
@@ -473,21 +512,24 @@ fun GroupMessageItems(message: ChatMessage) {
                                     )
                                 }
                             }
-                            // Code preview
-                            Text(
-                                text = preview,
-                                color = Color(0xFFc9d1d9),
-                                fontFamily = FontFamily.Monospace,
-                                fontSize = 13.sp,
-                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
-                            )
+                            // Code preview (with clickable overlay)
+                            Box {
+                                Text(
+                                    text = preview,
+                                    color = Color(0xFFc9d1d9),
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 13.sp,
+                                    modifier = Modifier
+                                        .padding(horizontal = 10.dp, vertical = 8.dp)
+                                        .fillMaxWidth()
+                                )
+                                Box(
+                                    Modifier
+                                        .matchParentSize()
+                                        .clickable { showDialog = true }
+                                )
+                            }
                         }
-                        // Clickable overlay
-                        Box(
-                            Modifier
-                                .matchParentSize()
-                                .clickable { showDialog = true }
-                        )
                     }
                 }
                 if (showDialog) {
