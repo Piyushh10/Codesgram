@@ -40,6 +40,15 @@ import androidx.navigation.NavController
 import com.example.codegram.R
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.codegram.ui.theme.dimens
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -93,9 +102,7 @@ fun LoginScreen(navController: NavController) {
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color.White, Color.Black),
-                    startY = 0f,
-                    endY = Float.POSITIVE_INFINITY
+                    colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
                 )
             )
             .systemBarsPadding()
@@ -105,28 +112,29 @@ fun LoginScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(40.dp))
+            LottieDemo()
             Text(
-                text = "Welcome Back!",
+                text = "Codesgram",
+                fontSize = 28.sp,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 32.sp,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Sign in to continue",
-                color = Color.White.copy(alpha = 0.85f),
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center
+                text = "Connect with coders, compete, and grow together!",
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 6.dp)
             )
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.weight(1f))
             Surface(
                 shape = RoundedCornerShape(24.dp),
-                shadowElevation = 12.dp,
                 tonalElevation = 8.dp,
+                shadowElevation = 12.dp,
                 color = Color.White.copy(alpha = 0.95f),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -162,6 +170,15 @@ fun LoginScreen(navController: NavController) {
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "By continuing, you agree to our Terms & Privacy Policy",
+                color = Color.White.copy(alpha = 0.5f),
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -187,3 +204,25 @@ fun Greeting(){
         )
     }
 }
+@Composable
+fun LottieDemo() {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.Url("https://lottie.host/4114b148-03dc-47a3-880f-1c49f8ea3ac2/9UlkpwjBXp.json")
+    )
+
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever,
+        speed = 1f // set speed here
+    )
+
+    LottieAnimation(
+        composition = composition,
+        progress = progress,
+        modifier = Modifier
+            .size(300.dp)
+    )
+}
+
+
+

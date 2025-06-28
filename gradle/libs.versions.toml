@@ -7,6 +7,8 @@ checkout = "1.6.40"
 coilCompose = "2.0.0"
 converterGson = "2.11.0"
 coreSplashscreen = "1.0.1"
+dotlottieAndroid = "0.0.3"
+dotlottieAndroidCompose = "1.0.0-beta04"
 firebaseBom = "33.5.1"
 graphicsShapes = "1.0.1"
 kotlin = "1.9.0"
@@ -18,6 +20,7 @@ lifecycleRuntimeCompose = "2.8.7"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.10.01"
+lottieCompose = "6.3.0"
 material3WindowSizeClassAndroid = "1.2.1"
 materialIconsExtended = "1.7.5"
 navigationCompose = "2.8.3"
@@ -48,6 +51,8 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 checkout = { module = "com.razorpay:checkout", version.ref = "checkout" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+dotlottie-android = { module = "com.github.LottieFiles:dotlottie-android", version.ref = "dotlottieAndroid" }
+dotlottie-android-compose = { module = "com.dotlottie:dotlottie-android-compose", version.ref = "dotlottieAndroidCompose" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 google-firebase-auth = { module = "com.google.firebase:firebase-auth" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -63,6 +68,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottieCompose" }
 material3 = { module = "androidx.compose.material3:material3" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
