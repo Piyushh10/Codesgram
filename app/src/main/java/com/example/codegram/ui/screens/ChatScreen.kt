@@ -159,150 +159,58 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                     colors = listOf(Color(0xFF0D0F27), Color(0xFF1B1F3A))
                 )
             )
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                focusManager.clearFocus()
+            }
     ) {
-        ModalNavigationDrawer(
-            drawerContent = {
-                DrawerContent(
-                    onItemClicked = { item ->
-                        scope.launch { drawerState.close() }
-                        when (item) {
-                            "Striver SDE Sheet" -> {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interviews/strivers-sde-sheet-top-coding-interview-problems"))
-                                context.startActivity(intent)
-                            }
-                            "A2Z Sheet" -> {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2"))
-                                context.startActivity(intent)
-                            }
-                            "Neetcode 150" -> {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://neetcode.io/practice"))
-                                context.startActivity(intent)
-                            }
-                            "Blind 75" -> {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interviews/blind-75-leetcode-problems-detailed-video-solutions"))
-                                context.startActivity(intent)
-                            }
-                            "Interview Experiences" -> {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interview"))
-                                context.startActivity(intent)
-                            }
-                            "SignOut" -> {
-                                FirebaseAuth.getInstance().signOut()
-                                navController.navigate(Screen.Login.route) {
-                                    popUpTo(0) { inclusive = true }
-                                    launchSingleTop = true
+        if (receiver == null) {
+            // User list screen: wrap in ModalNavigationDrawer
+            ModalNavigationDrawer(
+                drawerContent = {
+                    DrawerContent(
+                        onItemClicked = { item ->
+                            scope.launch { drawerState.close() }
+                            when (item) {
+                                "Striver SDE Sheet" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interviews/strivers-sde-sheet-top-coding-interview-problems"))
+                                    context.startActivity(intent)
+                                }
+                                "A2Z Sheet" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2"))
+                                    context.startActivity(intent)
+                                }
+                                "Neetcode 150" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://neetcode.io/practice"))
+                                    context.startActivity(intent)
+                                }
+                                "Blind 75" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interviews/blind-75-leetcode-problems-detailed-video-solutions"))
+                                    context.startActivity(intent)
+                                }
+                                "Interview Experiences" -> {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://takeuforward.org/interview"))
+                                    context.startActivity(intent)
+                                }
+                                "SignOut" -> {
+                                    FirebaseAuth.getInstance().signOut()
+                                    navController.navigate(Screen.Login.route) {
+                                        popUpTo(0) { inclusive = true }
+                                        launchSingleTop = true
+                                    }
                                 }
                             }
-                        }
-                    },
-                    onClose = { scope.launch { drawerState.close() } }
-                )
-            },
-            drawerState = drawerState,
-            modifier = Modifier.imeNestedScroll()
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        focusManager.clearFocus()
-                    }
+                        },
+                        onClose = { scope.launch { drawerState.close() } }
+                    )
+                },
+                drawerState = drawerState,
+                modifier = Modifier.imeNestedScroll()
             ) {
-                // Modern Header
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFF1B1F3A),
-                                    Color(0xFF2A2F4C),
-                                    Color(0xFF3A3F5C)
-                                ),
-                                start = Offset(0f, 0f),
-                                end = Offset(1000f, 0f)
-                            )
-                        )
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
-                        .shadow(
-                            elevation = 8.dp,
-                            shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
-                            spotColor = Color.Black.copy(alpha = 0.3f)
-                        )
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Left side - App branding
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // App icon/logo
-                            Image(
-                                painter = painterResource(R.drawable.launcher),
-                                contentDescription = "App Logo",
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                            )
-                            
-                            Spacer(modifier = Modifier.width(12.dp))
-                            
-                            // App name and tagline
-                            Column {
-                                Text(
-                                    text = "Codesgram",
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp,
-                                    fontFamily = FontFamily(Font(R.font.comforta_bold))
-                                )
-                                Text(
-                                    text = "Connect • Code • Grow",
-                                    color = Color.White.copy(alpha = 0.7f),
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-                        
-                        // Right side - Menu button
-                        IconButton(
-                            onClick = { scope.launch { drawerState.open() } },
-                            modifier = Modifier
-                                .size(44.dp)
-                                .background(
-                                    Color.White.copy(alpha = 0.1f),
-                                    CircleShape
-                                )
-                        ) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    }
-                }
-
-                if (receiver == null) {
-                    senderId?.let {
-                        UserListScreen(
-                            chatHelper = chatHelper,
-                            currentUserId = it,
-                            currentUserAvatar = currentUserAvatar,
-                            onUserClick = { selectedUser -> receiver = selectedUser },
-                            navController
-                        )
-                    }
-                } else {
-                    // Modern Chat Header
+                Column {
+                    // Codesgram top bar with menu button
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -325,136 +233,220 @@ fun ChatScreen(chatHelper: ChatHelper, navController: NavController) {
                             )
                     ) {
                         Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Back button
+                            // Left side - App branding
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.launcher),
+                                    contentDescription = "App Logo",
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = "Codesgram",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 18.sp,
+                                        fontFamily = FontFamily(Font(R.font.comforta_bold))
+                                    )
+                                    Text(
+                                        text = "Connect • Code • Grow",
+                                        color = Color.White.copy(alpha = 0.7f),
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                            // Right side - Menu button
                             IconButton(
-                                onClick = { receiver = null },
+                                onClick = { scope.launch { drawerState.open() } },
                                 modifier = Modifier
-                                    .size(40.dp)
+                                    .size(44.dp)
                                     .background(
                                         Color.White.copy(alpha = 0.1f),
                                         CircleShape
                                     )
                             ) {
                                 Icon(
-                                    Icons.Default.ArrowBack,
-                                    contentDescription = "Back",
+                                    Icons.Default.Menu,
+                                    contentDescription = "Menu",
                                     tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.width(12.dp))
-
-                            // User avatar
-                            receiver?.avatar?.let { avatarUrl ->
-                                AsyncImage(
-                                    model = avatarUrl,
-                                    contentDescription = "Profile Picture",
-                                    modifier = Modifier
-                                        .size(44.dp)
-                                        .clip(CircleShape)
-                                        .border(2.dp, Color.White.copy(alpha = 0.3f), CircleShape)
-                                        .clickable {
-                                            navController.navigate(
-                                                Screen.LeetCodeStats.createRoute(
-                                                    receiverUsername ?: "Unknown"
-                                                )
-                                            )
-                                        }
-                                )
-
-                                Spacer(modifier = Modifier.width(12.dp))
-                            }
-
-                            // User info
-                            Column(
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    text = receiverUsername ?: "Unknown",
-                                    fontFamily = FontFamily(Font(R.font.comforta_bold)),
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    fontSize = 16.sp
-                                )
-                                Text(
-                                    text = "Tap to view profile",
-                                    color = Color.White.copy(alpha = 0.7f),
-                                    fontSize = 12.sp
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }
                     }
+                    senderId?.let {
+                        UserListScreen(
+                            chatHelper = chatHelper,
+                            currentUserId = it,
+                            currentUserAvatar = currentUserAvatar,
+                            onUserClick = { selectedUser -> receiver = selectedUser },
+                            navController
+                        )
+                    }
+                }
+            }
+        } else {
+            // Only show the user info header in personal chat, not the Codesgram top bar
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFF1B1F3A),
+                                Color(0xFF2A2F4C),
+                                Color(0xFF3A3F5C)
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(1000f, 0f)
+                        )
+                    )
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp),
+                        spotColor = Color.Black.copy(alpha = 0.3f)
+                    )
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Back button
+                    IconButton(
+                        onClick = { receiver = null },
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                Color.White.copy(alpha = 0.1f),
+                                CircleShape
+                            )
+                    ) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.width(12.dp))
 
-                    // Messages List
-                    LazyColumn(
-                        state = listState,
+                    // User avatar
+                    receiver?.avatar?.let { avatarUrl ->
+                        AsyncImage(
+                            model = avatarUrl,
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .border(2.dp, Color.White.copy(alpha = 0.3f), CircleShape)
+                                .clickable {
+                                    navController.navigate(
+                                        Screen.LeetCodeStats.createRoute(
+                                            receiverUsername ?: "Unknown"
+                                        )
+                                    )
+                                }
+                        )
+
+                        Spacer(modifier = Modifier.width(12.dp))
+                    }
+
+                    // User info
+                    Column(
                         modifier = Modifier.weight(1f)
                     ) {
-                        items(messages) { message ->
-                            PersonalMessageItem(message = message, currentUserId = senderId)
-                        }
+                        Text(
+                            text = receiverUsername ?: "Unknown",
+                            fontFamily = FontFamily(Font(R.font.comforta_bold)),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = "Tap to view profile",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 12.sp
+                        )
                     }
+                }
+            }
 
-                    // Input Row
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Messages List
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.weight(1f)
+            ) {
+                items(messages) { message ->
+                    PersonalMessageItem(message = message, currentUserId = senderId)
+                }
+            }
+
+            // Input Row
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF2A2F4C).copy(alpha = 0.8f)
+                ),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        value = message,
+                        onValueChange = { message = it },
+                        label = { Text("Type your message", color = Color.White.copy(alpha = 0.6f)) },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White
                         ),
-                        shape = RoundedCornerShape(24.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            TextField(
-                                value = message,
-                                onValueChange = { message = it },
-                                label = { Text("Type your message", color = Color.White.copy(alpha = 0.6f)) },
-                                modifier = Modifier.weight(1f),
-                                shape = RoundedCornerShape(20.dp),
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent,
-                                    focusedTextColor = Color.White,
-                                    unfocusedTextColor = Color.White
-                                ),
-                                textStyle = LocalTextStyle.current.copy(color = Color.White)
-                            )
-                            IconButton(
-                                onClick = {
-                                    senderId?.let {
-                                        chatHelper.sendMessage(it, receiver?.userId ?: "", message)
-                                    }
-                                    message = ""
-                                },
-                                modifier = Modifier
-                                    .size(44.dp)
-                                    .background(
-                                        Color(0xFF7AB2D3),
-                                        CircleShape
-                                    )
-                            ) {
-                                Icon(
-                                    Icons.Filled.Send,
-                                    contentDescription = "Send",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(20.dp)
-                                )
+                        textStyle = LocalTextStyle.current.copy(color = Color.White)
+                    )
+                    IconButton(
+                        onClick = {
+                            senderId?.let {
+                                chatHelper.sendMessage(it, receiver?.userId ?: "", message)
                             }
-                        }
+                            message = ""
+                        },
+                        modifier = Modifier
+                            .size(44.dp)
+                            .background(
+                                Color(0xFF7AB2D3),
+                                CircleShape
+                            )
+                    ) {
+                        Icon(
+                            Icons.Filled.Send,
+                            contentDescription = "Send",
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
             }
