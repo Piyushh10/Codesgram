@@ -21,4 +21,13 @@ class LeetCodeRepository(private val api: LeetCodeApi) {
             null
         }
     }
+
+    suspend fun fetchSubmissionCalendar(username: String): com.example.codegram.model.leetcode.SubmissionCalendar? {
+        return try {
+            api.getUserSubmissionCalendar(username)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.codegram.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -68,6 +69,17 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.navigation.NavController
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material3.TextButton
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -381,6 +393,9 @@ fun GroupMessageItems(message: ChatMessage) {
     val isSentByCurrentUser = message.senderId == currentUserId
     var senderAvatar by remember { mutableStateOf<String?>(null) }
     var senderName by remember { mutableStateOf("") }
+    val clipboardManager = LocalClipboardManager.current
+    val isCode = message.message.trim().lowercase().startsWith("/code")
+    val codeContent = if (isCode) message.message.trim().removePrefix("/code").trimStart() else null
 
     // Fetch sender's avatar and name from Firebase
     LaunchedEffect(message.senderId) {
@@ -410,28 +425,124 @@ fun GroupMessageItems(message: ChatMessage) {
             Spacer(Modifier.width(8.dp))
         }
         Column(horizontalAlignment = if (isSentByCurrentUser) Alignment.End else Alignment.Start) {
-            if (!isSentByCurrentUser) {
-                Text(
-                    text = senderName,
-                    fontSize = 12.sp,
-                    color = Color.White.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(bottom = 2.dp)
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .background(
-                        if (isSentByCurrentUser) Color(0xFF7AB2D3) else Color(0xFF2A2F4C),
-                        shape = RoundedCornerShape(16.dp)
+            if (isCode && codeContent != null) {
+                var showDialog by remember { mutableStateOf(false) }
+                val preview = codeContent.lines().take(5).joinToString("\n").take(200) + if (codeContent.length > 200 || codeContent.lines().size > 5) "\n..." else ""
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .widthIn(max = 320.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF23274D)),
+                    shape = RoundedCornerShape(10.dp),
+                    border = BorderStroke(1.5.dp, Color(0xFF7AB2D3)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                ) {
+                    Box {
+                        Column(modifier = Modifier.padding(top = 0.dp, bottom = 8.dp, start = 0.dp, end = 0.dp)) {
+                            // Top bar
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color(0xFF2A2F4C), RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
+                                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Code,
+                                    contentDescription = null,
+                                    tint = Color(0xFF7AB2D3),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Code",
+                                    color = Color(0xFF7AB2D3),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+                                IconButton(
+                                    onClick = { clipboardManager.setText(AnnotatedString(codeContent)) },
+                                    modifier = Modifier.size(24.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ContentCopy,
+                                        contentDescription = "Copy code",
+                                        tint = Color(0xFF7AB2D3),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                            // Code preview
+                            Text(
+                                text = preview,
+                                color = Color(0xFFc9d1d9),
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 13.sp,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+                            )
+                        }
+                        // Clickable overlay
+                        Box(
+                            Modifier
+                                .matchParentSize()
+                                .clickable { showDialog = true }
+                        )
+                    }
+                }
+                if (showDialog) {
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        confirmButton = {
+                            TextButton(onClick = { showDialog = false }) {
+                                Text(
+                                    "Close",
+                                    color = Color(0xFF7AB2D3),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        },
+                        title = { Text("Full Code", color = Color(0xFF7AB2D3), fontWeight = FontWeight.Bold) },
+                        text = {
+                            Box(modifier = Modifier.heightIn(min = 100.dp, max = 400.dp).verticalScroll(rememberScrollState())) {
+                                Text(
+                                    text = codeContent,
+                                    color = Color(0xFFc9d1d9),
+                                    fontFamily = FontFamily.Monospace,
+                                    fontSize = 13.sp
+                                )
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                clipboardManager.setText(AnnotatedString(codeContent))
+                            }) {
+                                Text(
+                                    "Copy All",
+                                    color = Color(0xFF7AB2D3),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        },
+                        containerColor = Color(0xFF23274D)
                     )
-                    .padding(12.dp)
-                    .widthIn(max = 250.dp)
-            ) {
-                Text(
-                    text = message.message,
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            if (isSentByCurrentUser) Color(0xFF7AB2D3) else Color(0xFF2A2F4C),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(12.dp)
+                        .widthIn(max = 250.dp)
+                ) {
+                    Text(
+                        text = message.message,
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
         if (isSentByCurrentUser) {

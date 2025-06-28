@@ -100,7 +100,7 @@ fun LeaderboardScreen() {
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
                     Text(
-                        text = "Leaderboard",
+                        text = "LeetBoard",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color.White,
                         modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp)
