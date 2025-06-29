@@ -6,6 +6,15 @@ Codesgram is a modern Android app that brings together coding enthusiasts to cha
 
 ---
 
+## 🎥 Demo 
+
+[![Demo](https://img.youtube.com/vi/-Cvvxf7GKgE/mqdefault.jpg)](https://youtu.be/VShRal99HYc)
+
+
+_Click the image above to watch the 2-minute demo_
+
+---
+
 ## Table of Contents
 
 - [Features](#features)
